@@ -14,7 +14,228 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      adventures: {
+        Row: {
+          cover_image_url: string | null
+          created_at: string
+          description: string | null
+          id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      characters: {
+        Row: {
+          adventure_id: string
+          avatar_url: string | null
+          created_at: string
+          id: string
+          name: string
+          notes: string | null
+          type: string | null
+          updated_at: string
+        }
+        Insert: {
+          adventure_id: string
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          notes?: string | null
+          type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          adventure_id?: string
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          type?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "characters_adventure_id_fkey"
+            columns: ["adventure_id"]
+            isOneToOne: false
+            referencedRelation: "adventures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      entries: {
+        Row: {
+          adventure_id: string
+          created_at: string
+          id: string
+          session_date_end: string | null
+          session_date_start: string | null
+          session_number: number | null
+          story_content: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          adventure_id: string
+          created_at?: string
+          id?: string
+          session_date_end?: string | null
+          session_date_start?: string | null
+          session_number?: number | null
+          story_content?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          adventure_id?: string
+          created_at?: string
+          id?: string
+          session_date_end?: string | null
+          session_date_start?: string | null
+          session_number?: number | null
+          story_content?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "entries_adventure_id_fkey"
+            columns: ["adventure_id"]
+            isOneToOne: false
+            referencedRelation: "adventures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      entry_characters: {
+        Row: {
+          character_id: string
+          entry_id: string
+          id: string
+        }
+        Insert: {
+          character_id: string
+          entry_id: string
+          id?: string
+        }
+        Update: {
+          character_id?: string
+          entry_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "entry_characters_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "entry_characters_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      entry_locations: {
+        Row: {
+          entry_id: string
+          id: string
+          location_id: string
+        }
+        Insert: {
+          entry_id: string
+          id?: string
+          location_id: string
+        }
+        Update: {
+          entry_id?: string
+          id?: string
+          location_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "entry_locations_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "entry_locations_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      locations: {
+        Row: {
+          adventure_id: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          notes: string | null
+          type: string | null
+          updated_at: string
+        }
+        Insert: {
+          adventure_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          notes?: string | null
+          type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          adventure_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          notes?: string | null
+          type?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "locations_adventure_id_fkey"
+            columns: ["adventure_id"]
+            isOneToOne: false
+            referencedRelation: "adventures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
