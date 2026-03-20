@@ -365,7 +365,7 @@ export default function EntryEditor() {
           </SheetHeader>
           <div className="mt-4 space-y-3 text-sm text-foreground">
             {sheetChar?.notes && <p>{sheetChar.notes}</p>}
-            <Button variant="link" className="text-gold p-0" onClick={() => navigate(`/adventure/${adventureId}?tab=characters`)}>
+            <Button variant="link" className="text-gold p-0" onClick={() => navigate(`/adventure/${adventureId}/character/${sheetChar?.id}`)}>
               Open full sheet →
             </Button>
           </div>
