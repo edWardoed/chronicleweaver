@@ -21,7 +21,8 @@ import { Label } from '@/components/ui/label';
 import { DeleteEntryDialog } from '@/components/DeleteEntryDialog';
 import { ArrowLeft, X, Save, MapPin, User, Search } from 'lucide-react';
 import { toast } from 'sonner';
-import type { Character, Location } from '@/lib/types';
+import type { CharacterRow } from '@/hooks/useCharacters';
+import type { LocationRow } from '@/hooks/useLocations';
 
 export default function EntryEditor() {
   const { adventureId, entryId } = useParams<{ adventureId: string; entryId: string }>();
