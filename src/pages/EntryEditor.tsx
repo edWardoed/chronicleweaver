@@ -19,8 +19,9 @@ import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbS
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { DeleteEntryDialog } from '@/components/DeleteEntryDialog';
-import { ArrowLeft, X, Save, MapPin, User, Search } from 'lucide-react';
+import { ArrowLeft, X, Save, MapPin, User, Search, CalendarDays } from 'lucide-react';
 import { toast } from 'sonner';
+import { useIsMobile } from '@/hooks/use-mobile';
 import type { CharacterRow } from '@/hooks/useCharacters';
 import type { LocationRow } from '@/hooks/useLocations';
 
@@ -28,6 +29,7 @@ export default function EntryEditor() {
   const { adventureId, entryId } = useParams<{ adventureId: string; entryId: string }>();
   const navigate = useNavigate();
   const isNew = entryId === 'new';
+  const isMobile = useIsMobile();
 
   const { data: adventure } = useAdventure(adventureId);
   const { data: existingEntry } = useEntry(isNew ? undefined : entryId);
@@ -56,12 +58,13 @@ export default function EntryEditor() {
   const [locSearch, setLocSearch] = useState('');
   const [sheetChar, setSheetChar] = useState<CharacterRow | null>(null);
   const [sheetLoc, setSheetLoc] = useState<LocationRow | null>(null);
+  const [mobileLeftOpen, setMobileLeftOpen] = useState(false);
+  const [mobileRightOpen, setMobileRightOpen] = useState(false);
 
-  // Track the real entry id after creation
   const [realEntryId, setRealEntryId] = useState<string | undefined>(isNew ? undefined : entryId);
   const creatingRef = useRef(false);
 
-  // Auto-increment session number for new entries
+  // Auto-increment session number for new entries (per adventure)
   useEffect(() => {
     if (isNew && entries && sessionNumber === '') {
       const max = entries.reduce((m, e) => Math.max(m, e.session_number ?? 0), 0);
@@ -69,7 +72,6 @@ export default function EntryEditor() {
     }
   }, [isNew, entries]);
 
-  // Load existing entry data
   useEffect(() => {
     if (existingEntry) {
       setTitle(existingEntry.title);
@@ -90,7 +92,6 @@ export default function EntryEditor() {
     },
   });
 
-  // Update editor content when existing entry loads
   useEffect(() => {
     if (editor && existingEntry?.story_content && !editor.getHTML().replace(/<[^>]*>/g, '').trim()) {
       editor.commands.setContent(existingEntry.story_content);
@@ -107,7 +108,7 @@ export default function EntryEditor() {
         setSaveStatus('saving');
         updateEntry.mutate(
           { id: realEntryId, story_content: editor.getHTML(), title: title || 'Untitled', session_number: sessionNumber === '' ? undefined : Number(sessionNumber), session_date_start: dateStart || undefined, session_date_end: isRange ? dateEnd || undefined : undefined },
-          { onSuccess: () => setSaveStatus('saved'), onError: () => setSaveStatus('idle') }
+          { onSuccess: () => setSaveStatus('saved'), onError: () => { setSaveStatus('idle'); toast.error('Autosave failed'); } }
         );
       }, 3000);
     };
@@ -138,7 +139,6 @@ export default function EntryEditor() {
           setRealEntryId(data.id);
           setSaveStatus('saved');
           toast.success('Entry created');
-          // Replace URL so subsequent saves use update
           window.history.replaceState(null, '', `/adventure/${adventureId}/entry/${data.id}`);
           creatingRef.current = false;
         },
@@ -154,11 +154,153 @@ export default function EntryEditor() {
     });
   };
 
-  // Character/Location link helpers
   const linkedChars = characters?.filter((c) => linkedCharIds?.includes(c.id)) ?? [];
   const linkedLocs = locations?.filter((l) => linkedLocIds?.includes(l.id)) ?? [];
   const filteredChars = characters?.filter((c) => !linkedCharIds?.includes(c.id) && c.name.toLowerCase().includes(charSearch.toLowerCase())) ?? [];
   const filteredLocs = locations?.filter((l) => !linkedLocIds?.includes(l.id) && l.name.toLowerCase().includes(locSearch.toLowerCase())) ?? [];
+
+  // Sidebar content components (reused for both desktop sidebar and mobile drawer)
+  const leftSidebarContent = (
+    <>
+      {/* Characters */}
+      <div className="mb-6">
+        <h3 className="font-heading text-xs text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1">
+          <User className="w-3 h-3" /> Characters
+        </h3>
+        {linkedChars.map((c) => (
+          <div
+            key={c.id}
+            className={`flex items-center gap-2 text-xs mb-1.5 px-2 py-1 rounded cursor-pointer group/chip ${
+              c.type === 'PC' ? 'bg-blue-900/30 text-blue-300' : 'bg-amber-900/30 text-amber-300'
+            }`}
+            onClick={() => setSheetChar(c)}
+          >
+            <Avatar className="w-5 h-5">
+              {c.avatar_url ? <AvatarImage src={c.avatar_url} /> : null}
+              <AvatarFallback className="text-[8px] bg-transparent">{c.name[0]}</AvatarFallback>
+            </Avatar>
+            <span className="truncate flex-1">{c.name}</span>
+            <button
+              onClick={(e) => { e.stopPropagation(); if (realEntryId) unlinkChar.mutate({ entryId: realEntryId, characterId: c.id }); }}
+              className="opacity-0 group-hover/chip:opacity-100"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          </div>
+        ))}
+        {realEntryId && (
+          <div className="mt-2">
+            <div className="relative">
+              <Search className="w-3 h-3 absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Add character…"
+                value={charSearch}
+                onChange={(e) => setCharSearch(e.target.value)}
+                className="h-7 text-xs pl-7 bg-muted border-border"
+              />
+            </div>
+            {charSearch && filteredChars.length > 0 && (
+              <div className="mt-1 bg-popover border border-border rounded-md max-h-32 overflow-y-auto">
+                {filteredChars.map((c) => (
+                  <button
+                    key={c.id}
+                    className="w-full text-left px-2 py-1 text-xs hover:bg-accent text-foreground"
+                    onClick={() => { linkChar.mutate({ entryId: realEntryId, characterId: c.id }); setCharSearch(''); }}
+                  >
+                    {c.name} <span className="text-muted-foreground">({c.type})</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Locations */}
+      <div>
+        <h3 className="font-heading text-xs text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1">
+          <MapPin className="w-3 h-3" /> Locations
+        </h3>
+        {linkedLocs.map((l) => (
+          <div
+            key={l.id}
+            className="flex items-center gap-2 text-xs mb-1.5 px-2 py-1 rounded bg-muted cursor-pointer group/chip text-foreground"
+            onClick={() => setSheetLoc(l)}
+          >
+            {l.image_url ? (
+              <img src={l.image_url} className="w-5 h-5 rounded object-cover" alt={l.name} />
+            ) : (
+              <MapPin className="w-4 h-4 text-muted-foreground" />
+            )}
+            <span className="truncate flex-1">{l.name}</span>
+            <button
+              onClick={(e) => { e.stopPropagation(); if (realEntryId) unlinkLoc.mutate({ entryId: realEntryId, locationId: l.id }); }}
+              className="opacity-0 group-hover/chip:opacity-100"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          </div>
+        ))}
+        {realEntryId && (
+          <div className="mt-2">
+            <div className="relative">
+              <Search className="w-3 h-3 absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Add location…"
+                value={locSearch}
+                onChange={(e) => setLocSearch(e.target.value)}
+                className="h-7 text-xs pl-7 bg-muted border-border"
+              />
+            </div>
+            {locSearch && filteredLocs.length > 0 && (
+              <div className="mt-1 bg-popover border border-border rounded-md max-h-32 overflow-y-auto">
+                {filteredLocs.map((l) => (
+                  <button
+                    key={l.id}
+                    className="w-full text-left px-2 py-1 text-xs hover:bg-accent text-foreground"
+                    onClick={() => { linkLoc.mutate({ entryId: realEntryId, locationId: l.id }); setLocSearch(''); }}
+                  >
+                    {l.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </>
+  );
+
+  const rightSidebarContent = (
+    <>
+      <h3 className="font-heading text-xs text-muted-foreground uppercase tracking-wider mb-3">Session Date</h3>
+      <div className="flex items-center gap-2 mb-3">
+        <Switch checked={isRange} onCheckedChange={setIsRange} id="date-range" />
+        <Label htmlFor="date-range" className="text-xs text-muted-foreground">Date Range</Label>
+      </div>
+      <Input
+        value={dateStart}
+        onChange={(e) => setDateStart(e.target.value)}
+        placeholder={isRange ? 'Start date…' : 'Session date…'}
+        className="h-8 text-xs bg-muted border-border mb-2"
+      />
+      {isRange && (
+        <Input
+          value={dateEnd}
+          onChange={(e) => setDateEnd(e.target.value)}
+          placeholder="End date…"
+          className="h-8 text-xs bg-muted border-border mb-2"
+        />
+      )}
+      <h3 className="font-heading text-xs text-muted-foreground uppercase tracking-wider mb-2 mt-4">Session #</h3>
+      <Input
+        type="number"
+        value={sessionNumber}
+        onChange={(e) => setSessionNumber(e.target.value === '' ? '' : Number(e.target.value))}
+        className="h-8 text-xs bg-muted border-border"
+      />
+    </>
+  );
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -185,114 +327,9 @@ export default function EntryEditor() {
 
       {/* Three-panel layout */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left sidebar */}
+        {/* Left sidebar — desktop only */}
         <aside className="w-[200px] flex-shrink-0 border-r border-border p-3 overflow-y-auto hidden md:block">
-          {/* Characters */}
-          <div className="mb-6">
-            <h3 className="font-heading text-xs text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1">
-              <User className="w-3 h-3" /> Characters
-            </h3>
-            {linkedChars.map((c) => (
-              <div
-                key={c.id}
-                className={`flex items-center gap-2 text-xs mb-1.5 px-2 py-1 rounded cursor-pointer group ${
-                  c.type === 'PC' ? 'bg-blue-900/30 text-blue-300' : 'bg-amber-900/30 text-amber-300'
-                }`}
-                onClick={() => setSheetChar(c)}
-              >
-                <Avatar className="w-5 h-5">
-                  {c.avatar_url ? <AvatarImage src={c.avatar_url} /> : null}
-                  <AvatarFallback className="text-[8px] bg-transparent">{c.name[0]}</AvatarFallback>
-                </Avatar>
-                <span className="truncate flex-1">{c.name}</span>
-                <button
-                  onClick={(e) => { e.stopPropagation(); if (realEntryId) unlinkChar.mutate({ entryId: realEntryId, characterId: c.id }); }}
-                  className="opacity-0 group-hover:opacity-100"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </div>
-            ))}
-            {realEntryId && (
-              <div className="mt-2">
-                <div className="relative">
-                  <Search className="w-3 h-3 absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    placeholder="Add character…"
-                    value={charSearch}
-                    onChange={(e) => setCharSearch(e.target.value)}
-                    className="h-7 text-xs pl-7 bg-muted border-border"
-                  />
-                </div>
-                {charSearch && filteredChars.length > 0 && (
-                  <div className="mt-1 bg-popover border border-border rounded-md max-h-32 overflow-y-auto">
-                    {filteredChars.map((c) => (
-                      <button
-                        key={c.id}
-                        className="w-full text-left px-2 py-1 text-xs hover:bg-accent text-foreground"
-                        onClick={() => { linkChar.mutate({ entryId: realEntryId, characterId: c.id }); setCharSearch(''); }}
-                      >
-                        {c.name} <span className="text-muted-foreground">({c.type})</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Locations */}
-          <div>
-            <h3 className="font-heading text-xs text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1">
-              <MapPin className="w-3 h-3" /> Locations
-            </h3>
-            {linkedLocs.map((l) => (
-              <div
-                key={l.id}
-                className="flex items-center gap-2 text-xs mb-1.5 px-2 py-1 rounded bg-muted cursor-pointer group text-foreground"
-                onClick={() => setSheetLoc(l)}
-              >
-                {l.image_url ? (
-                  <img src={l.image_url} className="w-5 h-5 rounded object-cover" alt={l.name} />
-                ) : (
-                  <MapPin className="w-4 h-4 text-muted-foreground" />
-                )}
-                <span className="truncate flex-1">{l.name}</span>
-                <button
-                  onClick={(e) => { e.stopPropagation(); if (realEntryId) unlinkLoc.mutate({ entryId: realEntryId, locationId: l.id }); }}
-                  className="opacity-0 group-hover:opacity-100"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </div>
-            ))}
-            {realEntryId && (
-              <div className="mt-2">
-                <div className="relative">
-                  <Search className="w-3 h-3 absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    placeholder="Add location…"
-                    value={locSearch}
-                    onChange={(e) => setLocSearch(e.target.value)}
-                    className="h-7 text-xs pl-7 bg-muted border-border"
-                  />
-                </div>
-                {locSearch && filteredLocs.length > 0 && (
-                  <div className="mt-1 bg-popover border border-border rounded-md max-h-32 overflow-y-auto">
-                    {filteredLocs.map((l) => (
-                      <button
-                        key={l.id}
-                        className="w-full text-left px-2 py-1 text-xs hover:bg-accent text-foreground"
-                        onClick={() => { linkLoc.mutate({ entryId: realEntryId, locationId: l.id }); setLocSearch(''); }}
-                      >
-                        {l.name}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+          {leftSidebarContent}
         </aside>
 
         {/* Center editor */}
@@ -310,39 +347,25 @@ export default function EntryEditor() {
           </div>
         </main>
 
-        {/* Right sidebar */}
+        {/* Right sidebar — desktop only */}
         <aside className="w-[180px] flex-shrink-0 border-l border-border p-3 overflow-y-auto hidden md:block">
-          <h3 className="font-heading text-xs text-muted-foreground uppercase tracking-wider mb-3">Session Date</h3>
-          <div className="flex items-center gap-2 mb-3">
-            <Switch checked={isRange} onCheckedChange={setIsRange} id="date-range" />
-            <Label htmlFor="date-range" className="text-xs text-muted-foreground">Date Range</Label>
-          </div>
-          <Input
-            value={dateStart}
-            onChange={(e) => setDateStart(e.target.value)}
-            placeholder={isRange ? 'Start date…' : 'Session date…'}
-            className="h-8 text-xs bg-muted border-border mb-2"
-          />
-          {isRange && (
-            <Input
-              value={dateEnd}
-              onChange={(e) => setDateEnd(e.target.value)}
-              placeholder="End date…"
-              className="h-8 text-xs bg-muted border-border mb-2"
-            />
-          )}
-          <h3 className="font-heading text-xs text-muted-foreground uppercase tracking-wider mb-2 mt-4">Session #</h3>
-          <Input
-            type="number"
-            value={sessionNumber}
-            onChange={(e) => setSessionNumber(e.target.value === '' ? '' : Number(e.target.value))}
-            className="h-8 text-xs bg-muted border-border"
-          />
+          {rightSidebarContent}
         </aside>
       </div>
 
       {/* Footer */}
       <footer className="border-t border-border px-4 py-3 flex items-center gap-3">
+        {/* Mobile toolbar buttons */}
+        {isMobile && (
+          <>
+            <Button variant="outline" size="icon" onClick={() => setMobileLeftOpen(true)} title="Characters & Locations" className="border-border md:hidden">
+              <User className="w-4 h-4" />
+            </Button>
+            <Button variant="outline" size="icon" onClick={() => setMobileRightOpen(true)} title="Session Details" className="border-border md:hidden">
+              <CalendarDays className="w-4 h-4" />
+            </Button>
+          </>
+        )}
         <Button onClick={handleSave} className="bg-burgundy hover:bg-burgundy-light text-foreground font-heading gap-2">
           <Save className="w-4 h-4" /> Save
         </Button>
@@ -356,6 +379,32 @@ export default function EntryEditor() {
         )}
       </footer>
 
+      {/* Mobile left drawer */}
+      <Sheet open={mobileLeftOpen} onOpenChange={setMobileLeftOpen}>
+        <SheetContent side="left" className="bg-card border-border w-[260px]">
+          <SheetHeader>
+            <SheetTitle className="font-heading text-gold">Characters & Locations</SheetTitle>
+            <SheetDescription>Link characters and locations to this entry.</SheetDescription>
+          </SheetHeader>
+          <div className="mt-4">
+            {leftSidebarContent}
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Mobile right drawer */}
+      <Sheet open={mobileRightOpen} onOpenChange={setMobileRightOpen}>
+        <SheetContent side="right" className="bg-card border-border w-[260px]">
+          <SheetHeader>
+            <SheetTitle className="font-heading text-gold">Session Details</SheetTitle>
+            <SheetDescription>Set the session date and number.</SheetDescription>
+          </SheetHeader>
+          <div className="mt-4">
+            {rightSidebarContent}
+          </div>
+        </SheetContent>
+      </Sheet>
+
       {/* Character sheet slide-over */}
       <Sheet open={!!sheetChar} onOpenChange={(o) => { if (!o) setSheetChar(null); }}>
         <SheetContent className="bg-card border-border">
@@ -364,6 +413,22 @@ export default function EntryEditor() {
             <SheetDescription>{sheetChar?.type === 'PC' ? 'Player Character' : 'Non-Player Character'}</SheetDescription>
           </SheetHeader>
           <div className="mt-4 space-y-3 text-sm text-foreground">
+            {sheetChar?.avatar_url && (
+              <Avatar className="w-16 h-16">
+                <AvatarImage src={sheetChar.avatar_url} />
+                <AvatarFallback className="font-heading">{sheetChar.name.slice(0, 2)}</AvatarFallback>
+              </Avatar>
+            )}
+            {sheetChar?.type === 'PC' && (
+              <div className="space-y-1 text-xs text-muted-foreground">
+                {sheetChar.class && <p>Class: <span className="text-foreground">{sheetChar.class}{sheetChar.subclass ? ` (${sheetChar.subclass})` : ''}</span></p>}
+                {sheetChar.race && <p>Race: <span className="text-foreground">{sheetChar.race}</span></p>}
+                {sheetChar.level && <p>Level: <span className="text-foreground">{sheetChar.level}</span></p>}
+              </div>
+            )}
+            {sheetChar?.type === 'NPC' && sheetChar.role_occupation && (
+              <p className="text-xs text-muted-foreground">Role: <span className="text-foreground">{sheetChar.role_occupation}</span></p>
+            )}
             {sheetChar?.notes && <p>{sheetChar.notes}</p>}
             <Button variant="link" className="text-gold p-0" onClick={() => navigate(`/adventure/${adventureId}/character/${sheetChar?.id}`)}>
               Open full sheet →
