@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAdventure, useUpdateAdventure } from '@/hooks/useAdventure';
 import { useEntries, useDeleteEntry } from '@/hooks/useEntries';
 import { useCharacters } from '@/hooks/useCharacters';
+import { CharacterList } from '@/components/CharacterList';
 import { uploadCoverImage } from '@/hooks/useAdventures';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
