@@ -46,6 +46,7 @@ export type Database = {
           adventure_id: string
           alignment: string | null
           armor_class: number | null
+          attitude: string | null
           avatar_url: string | null
           background: string | null
           bonds: string | null
@@ -71,8 +72,10 @@ export type Database = {
           name: string
           notes: string | null
           personality_traits: string | null
+          physical_description: string | null
           proficiencies_languages: string | null
           race: string | null
+          role_occupation: string | null
           saving_throw_proficiencies: string[] | null
           skill_half_proficiencies: string[] | null
           skill_proficiencies: string[] | null
@@ -80,17 +83,20 @@ export type Database = {
           spell_slots: Json | null
           spellcasting_ability: string | null
           spells: Json | null
+          story_role: string | null
           str_score: number | null
           subclass: string | null
           temp_hp: number | null
           type: string | null
           updated_at: string
+          voice_mannerisms: string | null
           wis_score: number | null
         }
         Insert: {
           adventure_id: string
           alignment?: string | null
           armor_class?: number | null
+          attitude?: string | null
           avatar_url?: string | null
           background?: string | null
           bonds?: string | null
@@ -116,8 +122,10 @@ export type Database = {
           name: string
           notes?: string | null
           personality_traits?: string | null
+          physical_description?: string | null
           proficiencies_languages?: string | null
           race?: string | null
+          role_occupation?: string | null
           saving_throw_proficiencies?: string[] | null
           skill_half_proficiencies?: string[] | null
           skill_proficiencies?: string[] | null
@@ -125,17 +133,20 @@ export type Database = {
           spell_slots?: Json | null
           spellcasting_ability?: string | null
           spells?: Json | null
+          story_role?: string | null
           str_score?: number | null
           subclass?: string | null
           temp_hp?: number | null
           type?: string | null
           updated_at?: string
+          voice_mannerisms?: string | null
           wis_score?: number | null
         }
         Update: {
           adventure_id?: string
           alignment?: string | null
           armor_class?: number | null
+          attitude?: string | null
           avatar_url?: string | null
           background?: string | null
           bonds?: string | null
@@ -161,8 +172,10 @@ export type Database = {
           name?: string
           notes?: string | null
           personality_traits?: string | null
+          physical_description?: string | null
           proficiencies_languages?: string | null
           race?: string | null
+          role_occupation?: string | null
           saving_throw_proficiencies?: string[] | null
           skill_half_proficiencies?: string[] | null
           skill_proficiencies?: string[] | null
@@ -170,11 +183,13 @@ export type Database = {
           spell_slots?: Json | null
           spellcasting_ability?: string | null
           spells?: Json | null
+          story_role?: string | null
           str_score?: number | null
           subclass?: string | null
           temp_hp?: number | null
           type?: string | null
           updated_at?: string
+          voice_mannerisms?: string | null
           wis_score?: number | null
         }
         Relationships: [
@@ -302,6 +317,7 @@ export type Database = {
           adventure_id: string
           created_at: string
           description: string | null
+          dm_notes: string | null
           id: string
           image_url: string | null
           name: string
@@ -313,6 +329,7 @@ export type Database = {
           adventure_id: string
           created_at?: string
           description?: string | null
+          dm_notes?: string | null
           id?: string
           image_url?: string | null
           name: string
@@ -324,6 +341,7 @@ export type Database = {
           adventure_id?: string
           created_at?: string
           description?: string | null
+          dm_notes?: string | null
           id?: string
           image_url?: string | null
           name?: string
