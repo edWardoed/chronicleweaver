@@ -131,11 +131,9 @@ export default function AdventureDashboard() {
           </div>
         </TabsContent>
 
-        {/* Characters Tab - placeholder */}
+        {/* Characters Tab */}
         <TabsContent value="characters" className="flex-1 p-4 md:p-6">
-          <div className="max-w-3xl mx-auto text-center py-16">
-            <p className="text-muted-foreground">Character management coming soon.</p>
-          </div>
+          <CharacterList adventureId={adventureId!} />
         </TabsContent>
 
         {/* Locations Tab - placeholder */}
