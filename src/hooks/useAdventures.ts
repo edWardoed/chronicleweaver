@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { Adventure } from '@/lib/types';
-import type { Database } from '@/integrations/supabase/types';
 
 export function useAdventures() {
   return useQuery<Adventure[]>({
