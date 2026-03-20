@@ -1,4 +1,5 @@
-import type { Entry, Character } from '@/lib/types';
+import type { Entry } from '@/lib/types';
+import type { CharacterRow } from '@/hooks/useCharacters';
 import { Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
