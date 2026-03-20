@@ -54,8 +54,8 @@ export default function EntryEditor() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [charSearch, setCharSearch] = useState('');
   const [locSearch, setLocSearch] = useState('');
-  const [sheetChar, setSheetChar] = useState<Character | null>(null);
-  const [sheetLoc, setSheetLoc] = useState<Location | null>(null);
+  const [sheetChar, setSheetChar] = useState<CharacterRow | null>(null);
+  const [sheetLoc, setSheetLoc] = useState<LocationRow | null>(null);
 
   // Track the real entry id after creation
   const [realEntryId, setRealEntryId] = useState<string | undefined>(isNew ? undefined : entryId);

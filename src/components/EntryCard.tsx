@@ -7,7 +7,7 @@ import { useEntryCharacters } from '@/hooks/useEntryLinks';
 
 interface Props {
   entry: Entry;
-  characters: Character[];
+  characters: CharacterRow[];
   onEdit: () => void;
   onDelete: () => void;
 }
