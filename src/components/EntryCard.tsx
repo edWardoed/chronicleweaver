@@ -2,17 +2,18 @@ import type { Entry } from '@/lib/types';
 import type { CharacterRow } from '@/hooks/useCharacters';
 import { Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useEntryCharacters } from '@/hooks/useEntryLinks';
 
 interface Props {
   entry: Entry;
   characters: CharacterRow[];
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  readOnly?: boolean;
 }
 
-export function EntryCard({ entry, characters, onEdit, onDelete }: Props) {
+export function EntryCard({ entry, characters, onEdit, onDelete, readOnly }: Props) {
   const { data: linkedIds } = useEntryCharacters(entry.id);
   const linked = characters.filter((c) => linkedIds?.includes(c.id));
 
@@ -47,6 +48,7 @@ export function EntryCard({ entry, characters, onEdit, onDelete }: Props) {
                 }`}
               >
                 <Avatar className="w-4 h-4">
+                  {c.avatar_url ? <AvatarImage src={c.avatar_url} alt={c.name} /> : null}
                   <AvatarFallback className="text-[8px] bg-transparent">{c.name[0]}</AvatarFallback>
                 </Avatar>
                 {c.name}
@@ -55,14 +57,16 @@ export function EntryCard({ entry, characters, onEdit, onDelete }: Props) {
           </div>
         )}
       </div>
-      <div className="flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-        <Button variant="ghost" size="icon" onClick={onEdit} title="Edit">
-          <Pencil className="w-4 h-4" />
-        </Button>
-        <Button variant="ghost" size="icon" onClick={onDelete} title="Delete">
-          <Trash2 className="w-4 h-4 text-destructive" />
-        </Button>
-      </div>
+      {!readOnly && (
+        <div className="flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+          <Button variant="ghost" size="icon" onClick={onEdit} title="Edit">
+            <Pencil className="w-4 h-4" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={onDelete} title="Delete">
+            <Trash2 className="w-4 h-4 text-destructive" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

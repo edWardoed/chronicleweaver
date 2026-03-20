@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useCharacter } from "@/hooks/useCharacters";
 import Index from "./pages/Index.tsx";
 import AdventureDashboard from "./pages/AdventureDashboard.tsx";
+import AdventureView from "./pages/AdventureView.tsx";
 import EntryEditor from "./pages/EntryEditor.tsx";
 import CharacterSheet from "./pages/CharacterSheet.tsx";
 import NPCSheet from "./pages/NPCSheet.tsx";
@@ -31,6 +32,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/adventure/:adventureId" element={<AdventureDashboard />} />
+          <Route path="/adventure/:adventureId/view" element={<AdventureView />} />
           <Route path="/adventure/:adventureId/entry/:entryId" element={<EntryEditor />} />
           <Route path="/adventure/:adventureId/character/:characterId" element={<CharacterSheetRouter />} />
           <Route path="/adventure/:adventureId/location/:locationId" element={<LocationEditor />} />
