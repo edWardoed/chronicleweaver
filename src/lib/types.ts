@@ -23,7 +23,7 @@ export interface Character {
   id: string;
   adventure_id: string;
   name: string;
-  type: 'PC' | 'NPC' | null;
+  type: string | null;
   avatar_url: string | null;
   notes: string | null;
   created_at: string;
