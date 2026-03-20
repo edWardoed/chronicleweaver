@@ -44,33 +44,138 @@ export type Database = {
       characters: {
         Row: {
           adventure_id: string
+          alignment: string | null
+          armor_class: number | null
           avatar_url: string | null
+          background: string | null
+          bonds: string | null
+          cha_score: number | null
+          class: string | null
+          con_score: number | null
           created_at: string
+          current_hp: number | null
+          death_save_failures: number | null
+          death_save_successes: number | null
+          dex_score: number | null
+          equipment: Json | null
+          experience_points: number | null
+          features_traits: string | null
+          flaws: string | null
+          hit_dice: string | null
           id: string
+          ideals: string | null
+          initiative_override: number | null
+          int_score: number | null
+          level: number | null
+          max_hp: number | null
           name: string
           notes: string | null
+          personality_traits: string | null
+          proficiencies_languages: string | null
+          race: string | null
+          saving_throw_proficiencies: string[] | null
+          skill_half_proficiencies: string[] | null
+          skill_proficiencies: string[] | null
+          speed: number | null
+          spell_slots: Json | null
+          spellcasting_ability: string | null
+          spells: Json | null
+          str_score: number | null
+          subclass: string | null
+          temp_hp: number | null
           type: string | null
           updated_at: string
+          wis_score: number | null
         }
         Insert: {
           adventure_id: string
+          alignment?: string | null
+          armor_class?: number | null
           avatar_url?: string | null
+          background?: string | null
+          bonds?: string | null
+          cha_score?: number | null
+          class?: string | null
+          con_score?: number | null
           created_at?: string
+          current_hp?: number | null
+          death_save_failures?: number | null
+          death_save_successes?: number | null
+          dex_score?: number | null
+          equipment?: Json | null
+          experience_points?: number | null
+          features_traits?: string | null
+          flaws?: string | null
+          hit_dice?: string | null
           id?: string
+          ideals?: string | null
+          initiative_override?: number | null
+          int_score?: number | null
+          level?: number | null
+          max_hp?: number | null
           name: string
           notes?: string | null
+          personality_traits?: string | null
+          proficiencies_languages?: string | null
+          race?: string | null
+          saving_throw_proficiencies?: string[] | null
+          skill_half_proficiencies?: string[] | null
+          skill_proficiencies?: string[] | null
+          speed?: number | null
+          spell_slots?: Json | null
+          spellcasting_ability?: string | null
+          spells?: Json | null
+          str_score?: number | null
+          subclass?: string | null
+          temp_hp?: number | null
           type?: string | null
           updated_at?: string
+          wis_score?: number | null
         }
         Update: {
           adventure_id?: string
+          alignment?: string | null
+          armor_class?: number | null
           avatar_url?: string | null
+          background?: string | null
+          bonds?: string | null
+          cha_score?: number | null
+          class?: string | null
+          con_score?: number | null
           created_at?: string
+          current_hp?: number | null
+          death_save_failures?: number | null
+          death_save_successes?: number | null
+          dex_score?: number | null
+          equipment?: Json | null
+          experience_points?: number | null
+          features_traits?: string | null
+          flaws?: string | null
+          hit_dice?: string | null
           id?: string
+          ideals?: string | null
+          initiative_override?: number | null
+          int_score?: number | null
+          level?: number | null
+          max_hp?: number | null
           name?: string
           notes?: string | null
+          personality_traits?: string | null
+          proficiencies_languages?: string | null
+          race?: string | null
+          saving_throw_proficiencies?: string[] | null
+          skill_half_proficiencies?: string[] | null
+          skill_proficiencies?: string[] | null
+          speed?: number | null
+          spell_slots?: Json | null
+          spellcasting_ability?: string | null
+          spells?: Json | null
+          str_score?: number | null
+          subclass?: string | null
+          temp_hp?: number | null
           type?: string | null
           updated_at?: string
+          wis_score?: number | null
         }
         Relationships: [
           {

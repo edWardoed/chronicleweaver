@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import AdventureDashboard from "./pages/AdventureDashboard.tsx";
 import EntryEditor from "./pages/EntryEditor.tsx";
+import CharacterSheet from "./pages/CharacterSheet.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -20,6 +21,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/adventure/:adventureId" element={<AdventureDashboard />} />
           <Route path="/adventure/:adventureId/entry/:entryId" element={<EntryEditor />} />
+          <Route path="/adventure/:adventureId/character/:characterId" element={<CharacterSheet />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
