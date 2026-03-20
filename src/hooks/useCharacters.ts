@@ -46,6 +46,11 @@ export interface CharacterRow {
   ideals: string | null;
   bonds: string | null;
   flaws: string | null;
+  role_occupation: string | null;
+  attitude: string | null;
+  physical_description: string | null;
+  voice_mannerisms: string | null;
+  story_role: string | null;
 }
 
 export interface EquipmentItem {

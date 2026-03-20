@@ -7,6 +7,8 @@ import Index from "./pages/Index.tsx";
 import AdventureDashboard from "./pages/AdventureDashboard.tsx";
 import EntryEditor from "./pages/EntryEditor.tsx";
 import CharacterSheet from "./pages/CharacterSheet.tsx";
+import NPCSheet from "./pages/NPCSheet.tsx";
+import LocationEditor from "./pages/LocationEditor.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
