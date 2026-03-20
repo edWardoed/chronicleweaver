@@ -23,7 +23,8 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/adventure/:adventureId" element={<AdventureDashboard />} />
           <Route path="/adventure/:adventureId/entry/:entryId" element={<EntryEditor />} />
-          <Route path="/adventure/:adventureId/character/:characterId" element={<CharacterSheet />} />
+          <Route path="/adventure/:adventureId/character/:characterId" element={<CharacterSheetRouter />} />
+          <Route path="/adventure/:adventureId/location/:locationId" element={<LocationEditor />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
