@@ -1,0 +1,45 @@
+import type { Adventure } from '@/lib/types';
+import { Eye, Pencil, Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+
+interface Props {
+  adventure: Adventure;
+  onView: (id: string) => void;
+  onEdit: (id: string) => void;
+  onDelete: (adventure: Adventure) => void;
+}
+
+export function AdventureCard({ adventure, onView, onEdit, onDelete }: Props) {
+  return (
+    <div className="group flex gap-4 p-4 bg-card rounded-lg border border-border hover:border-gold/40 transition-all animate-fade-in">
+      {adventure.cover_image_url ? (
+        <img
+          src={adventure.cover_image_url}
+          alt={adventure.title}
+          className="w-20 h-20 rounded-md object-cover flex-shrink-0"
+        />
+      ) : (
+        <div className="w-20 h-20 rounded-md bg-muted flex items-center justify-center flex-shrink-0">
+          <span className="font-heading text-2xl text-gold/40">{adventure.title[0]}</span>
+        </div>
+      )}
+      <div className="flex-1 min-w-0">
+        <h3 className="font-heading text-lg text-gold truncate">{adventure.title}</h3>
+        {adventure.description && (
+          <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{adventure.description}</p>
+        )}
+      </div>
+      <div className="flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+        <Button variant="ghost" size="icon" onClick={() => onView(adventure.id)} title="View">
+          <Eye className="w-4 h-4 text-foreground" />
+        </Button>
+        <Button variant="ghost" size="icon" onClick={() => onEdit(adventure.id)} title="Edit">
+          <Pencil className="w-4 h-4 text-foreground" />
+        </Button>
+        <Button variant="ghost" size="icon" onClick={() => onDelete(adventure)} title="Delete">
+          <Trash2 className="w-4 h-4 text-destructive" />
+        </Button>
+      </div>
+    </div>
+  );
+}
