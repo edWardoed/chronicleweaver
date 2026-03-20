@@ -383,7 +383,7 @@ export default function EntryEditor() {
             {sheetLoc?.image_url && <img src={sheetLoc.image_url} className="w-full rounded-md" alt={sheetLoc.name} />}
             {sheetLoc?.description && <p>{sheetLoc.description}</p>}
             {sheetLoc?.notes && <p className="text-muted-foreground">{sheetLoc.notes}</p>}
-            <Button variant="link" className="text-gold p-0" onClick={() => navigate(`/adventure/${adventureId}?tab=locations`)}>
+            <Button variant="link" className="text-gold p-0" onClick={() => navigate(`/adventure/${adventureId}/location/${sheetLoc?.id}`)}>
               Open full location →
             </Button>
           </div>
