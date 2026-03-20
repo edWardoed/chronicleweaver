@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useParams } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useCharacter } from "@/hooks/useCharacters";
 import Index from "./pages/Index.tsx";
 import AdventureDashboard from "./pages/AdventureDashboard.tsx";
 import EntryEditor from "./pages/EntryEditor.tsx";
@@ -12,6 +13,14 @@ import LocationEditor from "./pages/LocationEditor.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
+
+function CharacterSheetRouter() {
+  const { characterId } = useParams<{ characterId: string }>();
+  const { data: character, isLoading } = useCharacter(characterId);
+  if (isLoading) return <div className="min-h-screen bg-background p-8 text-foreground">Loading…</div>;
+  if (!character) return <div className="min-h-screen bg-background p-8 text-foreground">Character not found</div>;
+  return character.type === 'NPC' ? <NPCSheet /> : <CharacterSheet />;
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
