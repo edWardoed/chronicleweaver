@@ -85,7 +85,7 @@ export default function EntryEditor() {
   }, [existingEntry]);
 
   const editor = useEditor({
-    extensions: [StarterKit, Image.configure({ inline: false, allowBase64: false, HTMLAttributes: { style: 'max-width:100%;height:auto;display:block;margin-left:0;margin-right:auto;cursor:pointer;' } })],
+    extensions: [StarterKit, ImageResize],
     content: existingEntry?.story_content ?? '',
     editorProps: {
       attributes: {
