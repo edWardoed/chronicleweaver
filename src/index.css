@@ -102,3 +102,19 @@
     border-color: hsl(var(--gold));
   }
 }
+
+/* TipTap inline images - resizable */
+.ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  cursor: pointer;
+  border-radius: 0.375rem;
+}
+.ProseMirror img.ProseMirror-selectednode {
+  outline: 2px solid hsl(var(--gold));
+  outline-offset: 2px;
+}
+.ProseMirror img:hover {
+  outline: 1px solid hsl(var(--gold) / 0.5);
+  outline-offset: 2px;
+}
