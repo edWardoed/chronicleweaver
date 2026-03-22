@@ -11,6 +11,7 @@ import {
 import { useEditor, EditorContent } from '@tiptap/react';
 import { EditorToolbar } from '@/components/EditorToolbar';
 import StarterKit from '@tiptap/starter-kit';
+import Image from '@tiptap/extension-image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -84,7 +85,7 @@ export default function EntryEditor() {
   }, [existingEntry]);
 
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [StarterKit, Image.configure({ inline: false, allowBase64: false, HTMLAttributes: { style: 'max-width:100%;height:auto;display:block;margin-left:0;margin-right:auto;cursor:pointer;' } })],
     content: existingEntry?.story_content ?? '',
     editorProps: {
       attributes: {
