@@ -304,7 +304,7 @@ export default function EntryEditor() {
   );
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="h-screen bg-background flex flex-col overflow-hidden">
       {/* Breadcrumb + save status */}
       <header className="border-b border-border px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
