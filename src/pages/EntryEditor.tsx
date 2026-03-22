@@ -9,6 +9,7 @@ import {
   useEntryLocations, useLinkLocation, useUnlinkLocation,
 } from '@/hooks/useEntryLinks';
 import { useEditor, EditorContent } from '@tiptap/react';
+import { EditorToolbar } from '@/components/EditorToolbar';
 import StarterKit from '@tiptap/starter-kit';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
