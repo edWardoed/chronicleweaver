@@ -9,6 +9,7 @@ import {
   useEntryLocations, useLinkLocation, useUnlinkLocation,
 } from '@/hooks/useEntryLinks';
 import { useEditor, EditorContent } from '@tiptap/react';
+import { EditorToolbar } from '@/components/EditorToolbar';
 import StarterKit from '@tiptap/starter-kit';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -342,8 +343,11 @@ export default function EntryEditor() {
               className="text-2xl font-heading bg-transparent border-none focus-visible:ring-0 px-0 text-gold placeholder:text-muted-foreground"
             />
           </div>
-          <div className="flex-1 overflow-y-auto px-2">
-            <EditorContent editor={editor} className="min-h-[400px]" />
+          <div className="flex-1 overflow-y-auto">
+            <EditorToolbar editor={editor} />
+            <div className="px-2">
+              <EditorContent editor={editor} className="min-h-[400px]" />
+            </div>
           </div>
         </main>
 
