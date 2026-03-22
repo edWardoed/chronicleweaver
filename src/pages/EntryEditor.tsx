@@ -11,7 +11,7 @@ import {
 import { useEditor, EditorContent } from '@tiptap/react';
 import { EditorToolbar } from '@/components/EditorToolbar';
 import StarterKit from '@tiptap/starter-kit';
-import Image from '@tiptap/extension-image';
+import ImageResize from 'tiptap-extension-resize-image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
