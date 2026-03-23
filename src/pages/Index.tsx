@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdventures } from '@/hooks/useAdventures';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { AdventureCard } from '@/components/AdventureCard';
 import { CreateAdventureModal } from '@/components/CreateAdventureModal';
 import { DeleteAdventureDialog } from '@/components/DeleteAdventureDialog';
@@ -8,7 +9,7 @@ import { Divider } from '@/components/Divider';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus, BookOpen } from 'lucide-react';
+import { Plus, BookOpen, LogOut, Users, Shield } from 'lucide-react';
 import type { Adventure } from '@/lib/types';
 import emptyScroll from '@/assets/empty-scroll.png';
 
