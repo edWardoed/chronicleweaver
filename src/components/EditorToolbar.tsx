@@ -35,7 +35,7 @@ export function EditorToolbar({ editor }: Props) {
   if (!editor) return null;
 
   const insertImage = (src: string) => {
-    editor.chain().focus().setImage({ src }).run();
+    (editor.chain().focus() as any).setImage({ src }).run();
     setPopoverOpen(false);
     setUrlValue('');
   };
