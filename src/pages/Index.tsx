@@ -17,6 +17,7 @@ export default function Index() {
   const [createOpen, setCreateOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Adventure | null>(null);
   const { data: adventures, isLoading } = useAdventures();
+  const { profile, isAdmin, signOut } = useAuthContext();
   const navigate = useNavigate();
 
   return (
