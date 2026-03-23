@@ -96,6 +96,7 @@ export default function Index() {
           )}
         </div>
       </div>
+      </div>
 
       <CreateAdventureModal open={createOpen} onOpenChange={setCreateOpen} />
       <DeleteAdventureDialog

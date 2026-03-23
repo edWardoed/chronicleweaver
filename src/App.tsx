@@ -3,8 +3,12 @@ import { BrowserRouter, Route, Routes, useParams } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useCharacter } from "@/hooks/useCharacters";
 import Index from "./pages/Index.tsx";
+import LoginPage from "./pages/LoginPage.tsx";
+import AdminUsersPage from "./pages/AdminUsersPage.tsx";
 import AdventureDashboard from "./pages/AdventureDashboard.tsx";
 import AdventureView from "./pages/AdventureView.tsx";
 import EntryEditor from "./pages/EntryEditor.tsx";
@@ -25,22 +29,25 @@ function CharacterSheetRouter() {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/adventure/:adventureId" element={<AdventureDashboard />} />
-          <Route path="/adventure/:adventureId/view" element={<AdventureView />} />
-          <Route path="/adventure/:adventureId/entry/:entryId" element={<EntryEditor />} />
-          <Route path="/adventure/:adventureId/character/:characterId" element={<CharacterSheetRouter />} />
-          <Route path="/adventure/:adventureId/location/:locationId" element={<LocationEditor />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+            <Route path="/admin/users" element={<ProtectedRoute requireAdmin><AdminUsersPage /></ProtectedRoute>} />
+            <Route path="/adventure/:adventureId" element={<ProtectedRoute><AdventureDashboard /></ProtectedRoute>} />
+            <Route path="/adventure/:adventureId/view" element={<ProtectedRoute><AdventureView /></ProtectedRoute>} />
+            <Route path="/adventure/:adventureId/entry/:entryId" element={<ProtectedRoute><EntryEditor /></ProtectedRoute>} />
+            <Route path="/adventure/:adventureId/character/:characterId" element={<ProtectedRoute><CharacterSheetRouter /></ProtectedRoute>} />
+            <Route path="/adventure/:adventureId/location/:locationId" element={<ProtectedRoute><LocationEditor /></ProtectedRoute>} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
