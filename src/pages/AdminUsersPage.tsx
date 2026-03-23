@@ -6,11 +6,12 @@ import { useAuthContext } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Plus, Users, Shield, User, Trash2, Loader2 } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { ArrowLeft, Plus, Users, Shield, User, Loader2, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface UserWithRole {
@@ -25,6 +26,7 @@ export default function AdminUsersPage() {
   const { isAdmin, signUp } = useAuthContext();
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
+  const [accessOpen, setAccessOpen] = useState<UserWithRole | null>(null);
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -45,6 +47,46 @@ export default function AdminUsersPage() {
       }));
     },
     enabled: isAdmin,
+  });
+
+  const { data: adventures } = useQuery({
+    queryKey: ['adventures'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('adventures').select('id, title');
+      if (error) throw error;
+      return data;
+    },
+    enabled: isAdmin,
+  });
+
+  const { data: accessList } = useQuery({
+    queryKey: ['adventure-access', accessOpen?.id],
+    queryFn: async () => {
+      if (!accessOpen) return [];
+      const { data, error } = await supabase
+        .from('adventure_access')
+        .select('adventure_id')
+        .eq('user_id', accessOpen.id);
+      if (error) throw error;
+      return data.map((d) => d.adventure_id);
+    },
+    enabled: !!accessOpen,
+  });
+
+  const toggleAccess = useMutation({
+    mutationFn: async ({ userId, adventureId, grant }: { userId: string; adventureId: string; grant: boolean }) => {
+      if (grant) {
+        const { error } = await supabase.from('adventure_access').insert({ user_id: userId, adventure_id: adventureId });
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('adventure_access').delete().eq('user_id', userId).eq('adventure_id', adventureId);
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['adventure-access', accessOpen?.id] });
+    },
+    onError: (err: any) => toast.error(err.message),
   });
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -111,6 +153,11 @@ export default function AdminUsersPage() {
                     <p className="text-foreground font-medium truncate">{u.display_name}</p>
                     <p className="text-muted-foreground text-sm truncate">{u.email}</p>
                   </div>
+                  {u.role !== 'admin' && (
+                    <Button variant="outline" size="sm" onClick={() => setAccessOpen(u)} className="border-gold/40 text-gold gap-1.5">
+                      <BookOpen className="w-3.5 h-3.5" /> Access
+                    </Button>
+                  )}
                   <Badge variant={u.role === 'admin' ? 'default' : 'secondary'} className={u.role === 'admin' ? 'bg-gold text-background' : ''}>
                     {u.role}
                   </Badge>
@@ -121,6 +168,7 @@ export default function AdminUsersPage() {
         )}
       </div>
 
+      {/* Create user dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="bg-card border-border">
           <DialogHeader>
@@ -147,6 +195,37 @@ export default function AdminUsersPage() {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Adventure access dialog */}
+      <Dialog open={!!accessOpen} onOpenChange={(open) => { if (!open) setAccessOpen(null); }}>
+        <DialogContent className="bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="font-heading text-gold">
+              Adventure Access — {accessOpen?.display_name}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 max-h-[400px] overflow-y-auto">
+            {adventures?.length === 0 && <p className="text-muted-foreground text-sm">No adventures created yet.</p>}
+            {adventures?.map((adv) => {
+              const hasAccess = accessList?.includes(adv.id) ?? false;
+              return (
+                <label key={adv.id} className="flex items-center gap-3 p-3 rounded-md bg-muted/50 hover:bg-muted cursor-pointer">
+                  <Checkbox
+                    checked={hasAccess}
+                    onCheckedChange={(checked) => {
+                      if (accessOpen) {
+                        toggleAccess.mutate({ userId: accessOpen.id, adventureId: adv.id, grant: !!checked });
+                      }
+                    }}
+                  />
+                  <BookOpen className="w-4 h-4 text-gold" />
+                  <span className="text-foreground text-sm">{adv.title}</span>
+                </label>
+              );
+            })}
+          </div>
         </DialogContent>
       </Dialog>
     </div>
