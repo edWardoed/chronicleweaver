@@ -21,7 +21,23 @@ export default function Index() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4 md:p-8">
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Top bar */}
+      <div className="flex items-center justify-end gap-3 p-4">
+        <span className="text-sm text-muted-foreground mr-auto">
+          {profile?.display_name}
+          {isAdmin && <Shield className="inline w-3.5 h-3.5 ml-1 text-gold" />}
+        </span>
+        {isAdmin && (
+          <Button variant="ghost" size="sm" onClick={() => navigate('/admin/users')} className="text-gold gap-1.5">
+            <Users className="w-4 h-4" /> Manage Users
+          </Button>
+        )}
+        <Button variant="ghost" size="sm" onClick={signOut} className="text-muted-foreground gap-1.5">
+          <LogOut className="w-4 h-4" /> Sign Out
+        </Button>
+      </div>
+      <div className="flex-1 flex items-center justify-center p-4 md:p-8">
       <div className="w-full max-w-5xl grid md:grid-cols-[340px_1fr] gap-8 md:gap-12">
         {/* Left column — Branding */}
         <div className="flex flex-col items-center md:items-start justify-center text-center md:text-left">
