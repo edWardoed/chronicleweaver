@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdventures } from '@/hooks/useAdventures';
+import { useAllAdventureRoles } from '@/hooks/useAdventureRole';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { AdventureCard } from '@/components/AdventureCard';
 import { CreateAdventureModal } from '@/components/CreateAdventureModal';
@@ -17,8 +18,18 @@ export default function Index() {
   const [createOpen, setCreateOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Adventure | null>(null);
   const { data: adventures, isLoading } = useAdventures();
+  const { data: roleMap } = useAllAdventureRoles();
   const { profile, isAdmin, signOut } = useAuthContext();
   const navigate = useNavigate();
+
+  const handleAdventureNavigate = (id: string) => {
+    const role = roleMap?.[id];
+    if (isAdmin || role === 'dm' || role === 'scribe') {
+      navigate(`/adventure/${id}`);
+    } else {
+      navigate(`/adventure/${id}/view`);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -47,14 +58,16 @@ export default function Index() {
           </div>
           <Divider />
           <p className="text-parchment/70 italic text-sm mb-8">Record the legends of your party</p>
-          <Button
-            onClick={() => setCreateOpen(true)}
-            className="bg-burgundy hover:bg-burgundy-light text-foreground font-heading gap-2 px-6"
-            size="lg"
-          >
-            <Plus className="w-5 h-5" />
-            Create Adventure
-          </Button>
+          {isAdmin && (
+            <Button
+              onClick={() => setCreateOpen(true)}
+              className="bg-burgundy hover:bg-burgundy-light text-foreground font-heading gap-2 px-6"
+              size="lg"
+            >
+              <Plus className="w-5 h-5" />
+              Create Adventure
+            </Button>
+          )}
         </div>
 
         {/* Right column — Adventures */}
@@ -74,8 +87,9 @@ export default function Index() {
                   <AdventureCard
                     key={adv.id}
                     adventure={adv}
+                    role={isAdmin ? 'dm' : (roleMap?.[adv.id] ?? 'viewer')}
                     onView={(id) => navigate(`/adventure/${id}/view`)}
-                    onEdit={(id) => navigate(`/adventure/${id}`)}
+                    onEdit={(id) => handleAdventureNavigate(id)}
                     onDelete={(a) => setDeleteTarget(a)}
                   />
                 ))}
@@ -85,20 +99,22 @@ export default function Index() {
             <div className="flex-1 flex flex-col items-center justify-center text-center">
               <img src={emptyScroll} alt="Empty scroll" className="w-48 h-48 object-contain opacity-70 mb-6" />
               <p className="text-muted-foreground mb-4">No chronicles yet</p>
-              <Button
-                onClick={() => setCreateOpen(true)}
-                variant="outline"
-                className="border-gold/40 text-gold hover:bg-gold/10 font-heading"
-              >
-                Begin your first chronicle
-              </Button>
+              {isAdmin && (
+                <Button
+                  onClick={() => setCreateOpen(true)}
+                  variant="outline"
+                  className="border-gold/40 text-gold hover:bg-gold/10 font-heading"
+                >
+                  Begin your first chronicle
+                </Button>
+              )}
             </div>
           )}
         </div>
       </div>
       </div>
 
-      <CreateAdventureModal open={createOpen} onOpenChange={setCreateOpen} />
+      {isAdmin && <CreateAdventureModal open={createOpen} onOpenChange={setCreateOpen} />}
       <DeleteAdventureDialog
         adventureId={deleteTarget?.id ?? null}
         adventureTitle={deleteTarget?.title ?? ''}

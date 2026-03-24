@@ -19,18 +19,21 @@ export type Database = {
           adventure_id: string
           created_at: string
           id: string
+          role: Database["public"]["Enums"]["adventure_role"]
           user_id: string
         }
         Insert: {
           adventure_id: string
           created_at?: string
           id?: string
+          role?: Database["public"]["Enums"]["adventure_role"]
           user_id: string
         }
         Update: {
           adventure_id?: string
           created_at?: string
           id?: string
+          role?: Database["public"]["Enums"]["adventure_role"]
           user_id?: string
         }
         Relationships: [
@@ -435,6 +438,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_adventure_role: {
+        Args: { _adventure_id: string; _user_id: string }
+        Returns: string
+      }
       has_adventure_access: {
         Args: { _adventure_id: string; _user_id: string }
         Returns: boolean
@@ -448,6 +455,7 @@ export type Database = {
       }
     }
     Enums: {
+      adventure_role: "dm" | "scribe" | "viewer"
       app_role: "admin" | "user"
     }
     CompositeTypes: {
@@ -576,6 +584,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      adventure_role: ["dm", "scribe", "viewer"],
       app_role: ["admin", "user"],
     },
   },
