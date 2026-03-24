@@ -96,14 +96,14 @@ export default function AdminUsersPage() {
         if (existing) {
           const { error } = await supabase
             .from('adventure_access')
-            .update({ role })
+            .update({ role: role as any })
             .eq('user_id', userId)
             .eq('adventure_id', adventureId);
           if (error) throw error;
         } else {
           const { error } = await supabase
             .from('adventure_access')
-            .insert({ user_id: userId, adventure_id: adventureId, role });
+            .insert([{ user_id: userId, adventure_id: adventureId, role: role as any }]);
           if (error) throw error;
         }
       }
