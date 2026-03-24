@@ -18,6 +18,7 @@ export function useAdventureRole(adventureId: string | undefined) {
         .eq('user_id', user!.id)
         .eq('adventure_id', adventureId!)
         .single();
+      console.log('[useAdventureRole]', { adventureId, userId: user!.id, data, error });
       if (error || !data) return 'viewer';
       return (data.role as AdventureRole) ?? 'viewer';
     },

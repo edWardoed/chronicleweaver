@@ -38,8 +38,10 @@ export function useCreateEntry() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (entry: { adventure_id: string; title: string; session_number?: number; session_date_start?: string; session_date_end?: string; story_content?: string }) => {
+      console.log('[createEntry] inserting:', entry);
       const { data, error } = await supabase.from('entries').insert(entry).select().single();
-      if (error) throw error;
+      if (error) { console.error('[createEntry] error:', error); throw error; }
+      console.log('[createEntry] success:', data);
       return data;
     },
     onSuccess: (data) => {
@@ -52,8 +54,9 @@ export function useUpdateEntry() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<Entry> & { id: string }) => {
+      console.log('[updateEntry] updating:', { id, updates });
       const { data, error } = await supabase.from('entries').update(updates).eq('id', id).select().single();
-      if (error) throw error;
+      if (error) { console.error('[updateEntry] error:', error); throw error; }
       return data;
     },
     onSuccess: (data) => {
