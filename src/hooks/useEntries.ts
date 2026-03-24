@@ -52,9 +52,8 @@ export function useUpdateEntry() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<Entry> & { id: string }) => {
-      console.log('[updateEntry] updating:', { id, updates });
       const { data, error } = await supabase.from('entries').update(updates).eq('id', id).select().single();
-      if (error) { console.error('[updateEntry] error:', error); throw error; }
+      if (error) throw error;
       return data;
     },
     onSuccess: (data) => {
