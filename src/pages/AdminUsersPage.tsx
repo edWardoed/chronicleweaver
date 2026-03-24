@@ -10,8 +10,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, Plus, Users, Shield, User, Loader2, BookOpen } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ArrowLeft, Plus, Users, Shield, User, Loader2, BookOpen, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface UserWithRole {
@@ -20,6 +20,17 @@ interface UserWithRole {
   email: string;
   role: string;
 }
+
+interface AccessRow {
+  adventure_id: string;
+  role: string;
+}
+
+const ADVENTURE_ROLES = [
+  { value: 'dm', label: 'DM', description: 'Full edit access' },
+  { value: 'scribe', label: 'Scribe', description: 'Edit entries & locations' },
+  { value: 'viewer', label: 'Viewer', description: 'Read-only access' },
+];
 
 export default function AdminUsersPage() {
   const navigate = useNavigate();
@@ -59,28 +70,42 @@ export default function AdminUsersPage() {
     enabled: isAdmin,
   });
 
-  const { data: accessList } = useQuery({
+  const { data: accessList } = useQuery<AccessRow[]>({
     queryKey: ['adventure-access', accessOpen?.id],
     queryFn: async () => {
       if (!accessOpen) return [];
       const { data, error } = await supabase
         .from('adventure_access')
-        .select('adventure_id')
+        .select('adventure_id, role')
         .eq('user_id', accessOpen.id);
       if (error) throw error;
-      return data.map((d) => d.adventure_id);
+      return data as AccessRow[];
     },
     enabled: !!accessOpen,
   });
 
-  const toggleAccess = useMutation({
-    mutationFn: async ({ userId, adventureId, grant }: { userId: string; adventureId: string; grant: boolean }) => {
-      if (grant) {
-        const { error } = await supabase.from('adventure_access').insert({ user_id: userId, adventure_id: adventureId });
-        if (error) throw error;
-      } else {
+  const setAccess = useMutation({
+    mutationFn: async ({ userId, adventureId, role }: { userId: string; adventureId: string; role: string | null }) => {
+      if (role === null) {
+        // Remove access
         const { error } = await supabase.from('adventure_access').delete().eq('user_id', userId).eq('adventure_id', adventureId);
         if (error) throw error;
+      } else {
+        // Check if access exists
+        const existing = accessList?.find((a) => a.adventure_id === adventureId);
+        if (existing) {
+          const { error } = await supabase
+            .from('adventure_access')
+            .update({ role })
+            .eq('user_id', userId)
+            .eq('adventure_id', adventureId);
+          if (error) throw error;
+        } else {
+          const { error } = await supabase
+            .from('adventure_access')
+            .insert({ user_id: userId, adventure_id: adventureId, role });
+          if (error) throw error;
+        }
       }
     },
     onSuccess: () => {
@@ -198,7 +223,7 @@ export default function AdminUsersPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Adventure access dialog */}
+      {/* Adventure access dialog with role selection */}
       <Dialog open={!!accessOpen} onOpenChange={(open) => { if (!open) setAccessOpen(null); }}>
         <DialogContent className="bg-card border-border">
           <DialogHeader>
@@ -209,20 +234,40 @@ export default function AdminUsersPage() {
           <div className="space-y-3 max-h-[400px] overflow-y-auto">
             {adventures?.length === 0 && <p className="text-muted-foreground text-sm">No adventures created yet.</p>}
             {adventures?.map((adv) => {
-              const hasAccess = accessList?.includes(adv.id) ?? false;
+              const access = accessList?.find((a) => a.adventure_id === adv.id);
+              const currentRole = access?.role ?? null;
               return (
-                <label key={adv.id} className="flex items-center gap-3 p-3 rounded-md bg-muted/50 hover:bg-muted cursor-pointer">
-                  <Checkbox
-                    checked={hasAccess}
-                    onCheckedChange={(checked) => {
-                      if (accessOpen) {
-                        toggleAccess.mutate({ userId: accessOpen.id, adventureId: adv.id, grant: !!checked });
-                      }
-                    }}
-                  />
-                  <BookOpen className="w-4 h-4 text-gold" />
-                  <span className="text-foreground text-sm">{adv.title}</span>
-                </label>
+                <div key={adv.id} className="flex items-center gap-3 p-3 rounded-md bg-muted/50">
+                  <BookOpen className="w-4 h-4 text-gold flex-shrink-0" />
+                  <span className="text-foreground text-sm flex-1 truncate">{adv.title}</span>
+                  <div className="flex items-center gap-2">
+                    <Select
+                      value={currentRole ?? 'none'}
+                      onValueChange={(value) => {
+                        if (accessOpen) {
+                          setAccess.mutate({
+                            userId: accessOpen.id,
+                            adventureId: adv.id,
+                            role: value === 'none' ? null : value,
+                          });
+                        }
+                      }}
+                    >
+                      <SelectTrigger className="w-[130px] h-8 text-xs border-border bg-background">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-card border-border">
+                        <SelectItem value="none" className="text-muted-foreground">No Access</SelectItem>
+                        {ADVENTURE_ROLES.map((r) => (
+                          <SelectItem key={r.value} value={r.value}>
+                            <span className="font-medium">{r.label}</span>
+                            <span className="text-muted-foreground ml-1">— {r.description}</span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
               );
             })}
           </div>
