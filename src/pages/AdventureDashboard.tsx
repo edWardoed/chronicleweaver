@@ -6,10 +6,12 @@ import { useCharacters } from '@/hooks/useCharacters';
 import { CharacterList } from '@/components/CharacterList';
 import { LocationList } from '@/components/LocationList';
 import { uploadCoverImage } from '@/hooks/useAdventures';
+import { useAdventureRole } from '@/hooks/useAdventureRole';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Plus, Pencil, Trash2, BookOpen } from 'lucide-react';
 import { DeleteEntryDialog } from '@/components/DeleteEntryDialog';
 import { EntryCard } from '@/components/EntryCard';
@@ -24,6 +26,7 @@ export default function AdventureDashboard() {
   const { data: characters } = useCharacters(adventureId!);
   const updateAdventure = useUpdateAdventure();
   const deleteEntry = useDeleteEntry();
+  const { canEdit, canEditEntries, canEditLocations, canEditCharacters, canDelete } = useAdventureRole(adventureId);
 
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState('');
@@ -58,7 +61,7 @@ export default function AdventureDashboard() {
         <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
           <ArrowLeft className="w-5 h-5" />
         </Button>
-        {editingTitle ? (
+        {canEdit && editingTitle ? (
           <Input
             autoFocus
             value={titleDraft}
@@ -70,10 +73,10 @@ export default function AdventureDashboard() {
         ) : (
           <button
             className="font-heading text-xl text-gold hover:text-gold-glow transition-colors flex items-center gap-2"
-            onClick={() => { setTitleDraft(adventure.title); setEditingTitle(true); }}
+            onClick={() => { if (canEdit) { setTitleDraft(adventure.title); setEditingTitle(true); } }}
           >
             {adventure.title}
-            <Pencil className="w-3.5 h-3.5 opacity-50" />
+            {canEdit && <Pencil className="w-3.5 h-3.5 opacity-50" />}
           </button>
         )}
       </header>
@@ -85,7 +88,9 @@ export default function AdventureDashboard() {
             <TabsTrigger value="entries" className="font-heading data-[state=active]:text-gold data-[state=active]:border-b-2 data-[state=active]:border-gold rounded-none bg-transparent">Entries</TabsTrigger>
             <TabsTrigger value="characters" className="font-heading data-[state=active]:text-gold data-[state=active]:border-b-2 data-[state=active]:border-gold rounded-none bg-transparent">Characters</TabsTrigger>
             <TabsTrigger value="locations" className="font-heading data-[state=active]:text-gold data-[state=active]:border-b-2 data-[state=active]:border-gold rounded-none bg-transparent">Locations</TabsTrigger>
-            <TabsTrigger value="settings" className="font-heading data-[state=active]:text-gold data-[state=active]:border-b-2 data-[state=active]:border-gold rounded-none bg-transparent">Settings</TabsTrigger>
+            {canEdit && (
+              <TabsTrigger value="settings" className="font-heading data-[state=active]:text-gold data-[state=active]:border-b-2 data-[state=active]:border-gold rounded-none bg-transparent">Settings</TabsTrigger>
+            )}
           </TabsList>
         </div>
 
@@ -94,12 +99,14 @@ export default function AdventureDashboard() {
           <div className="max-w-3xl mx-auto">
             <div className="flex items-center justify-between mb-6">
               <h2 className="font-heading text-lg text-foreground">Journal Entries</h2>
-              <Button
-                onClick={() => navigate(`/adventure/${adventureId}/entry/new`)}
-                className="bg-burgundy hover:bg-burgundy-light text-foreground font-heading gap-2"
-              >
-                <Plus className="w-4 h-4" /> New Entry
-              </Button>
+              {canEditEntries && (
+                <Button
+                  onClick={() => navigate(`/adventure/${adventureId}/entry/new`)}
+                  className="bg-burgundy hover:bg-burgundy-light text-foreground font-heading gap-2"
+                >
+                  <Plus className="w-4 h-4" /> New Entry
+                </Button>
+              )}
             </div>
 
             {entriesLoading ? (
@@ -111,8 +118,9 @@ export default function AdventureDashboard() {
                     key={entry.id}
                     entry={entry}
                     characters={characters ?? []}
-                    onEdit={() => navigate(`/adventure/${adventureId}/entry/${entry.id}`)}
-                    onDelete={() => setDeleteTarget(entry)}
+                    onEdit={canEditEntries ? () => navigate(`/adventure/${adventureId}/entry/${entry.id}`) : undefined}
+                    onDelete={canDelete ? () => setDeleteTarget(entry) : undefined}
+                    readOnly={!canEditEntries}
                   />
                 ))}
               </div>
@@ -120,13 +128,15 @@ export default function AdventureDashboard() {
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <BookOpen className="w-16 h-16 text-muted-foreground/30 mb-4" />
                 <p className="text-muted-foreground mb-4">No entries yet. Start writing your chronicle.</p>
-                <Button
-                  onClick={() => navigate(`/adventure/${adventureId}/entry/new`)}
-                  variant="outline"
-                  className="border-gold/40 text-gold hover:bg-gold/10 font-heading"
-                >
-                  Write your first entry
-                </Button>
+                {canEditEntries && (
+                  <Button
+                    onClick={() => navigate(`/adventure/${adventureId}/entry/new`)}
+                    variant="outline"
+                    className="border-gold/40 text-gold hover:bg-gold/10 font-heading"
+                  >
+                    Write your first entry
+                  </Button>
+                )}
               </div>
             )}
           </div>
@@ -134,37 +144,39 @@ export default function AdventureDashboard() {
 
         {/* Characters Tab */}
         <TabsContent value="characters" className="flex-1 p-4 md:p-6">
-          <CharacterList adventureId={adventureId!} />
+          <CharacterList adventureId={adventureId!} readOnly={!canEditCharacters} />
         </TabsContent>
 
         {/* Locations Tab */}
         <TabsContent value="locations" className="flex-1 p-4 md:p-6">
-          <LocationList adventureId={adventureId!} />
+          <LocationList adventureId={adventureId!} readOnly={!canEditLocations} />
         </TabsContent>
 
-        {/* Settings Tab */}
-        <TabsContent value="settings" className="flex-1 p-4 md:p-6">
-          <div className="max-w-lg mx-auto space-y-6">
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Adventure Title</label>
-              <Input
-                defaultValue={adventure.title}
-                onBlur={(e) => {
-                  const v = e.target.value.trim();
-                  if (v && v !== adventure.title) updateAdventure.mutate({ id: adventure.id, title: v });
-                }}
-                className="font-heading bg-muted border-border"
-              />
+        {/* Settings Tab - DM only */}
+        {canEdit && (
+          <TabsContent value="settings" className="flex-1 p-4 md:p-6">
+            <div className="max-w-lg mx-auto space-y-6">
+              <div>
+                <label className="text-sm text-muted-foreground mb-1 block">Adventure Title</label>
+                <Input
+                  defaultValue={adventure.title}
+                  onBlur={(e) => {
+                    const v = e.target.value.trim();
+                    if (v && v !== adventure.title) updateAdventure.mutate({ id: adventure.id, title: v });
+                  }}
+                  className="font-heading bg-muted border-border"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-muted-foreground mb-1 block">Cover Image</label>
+                {adventure.cover_image_url && (
+                  <img src={adventure.cover_image_url} alt="Cover" className="w-full max-w-xs h-40 object-cover rounded-md mb-2" />
+                )}
+                <Input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleCoverUpload} className="bg-muted border-border" />
+              </div>
             </div>
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Cover Image</label>
-              {adventure.cover_image_url && (
-                <img src={adventure.cover_image_url} alt="Cover" className="w-full max-w-xs h-40 object-cover rounded-md mb-2" />
-              )}
-              <Input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleCoverUpload} className="bg-muted border-border" />
-            </div>
-          </div>
-        </TabsContent>
+          </TabsContent>
+        )}
       </Tabs>
 
       <DeleteEntryDialog
