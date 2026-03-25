@@ -14,6 +14,7 @@ export interface Entry {
   story_content: string | null;
   session_date_start: string | null;
   session_date_end: string | null;
+  real_world_date: string | null;
   session_number: number | null;
   created_at: string;
   updated_at: string;

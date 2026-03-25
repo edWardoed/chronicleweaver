@@ -37,7 +37,7 @@ export function useEntry(entryId: string | undefined) {
 export function useCreateEntry() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (entry: { adventure_id: string; title: string; session_number?: number; session_date_start?: string; session_date_end?: string; story_content?: string }) => {
+    mutationFn: async (entry: { adventure_id: string; title: string; session_number?: number; session_date_start?: string; session_date_end?: string; story_content?: string; real_world_date?: string }) => {
       const { data, error } = await supabase.from('entries').insert(entry).select().single();
       if (error) throw error;
       return data;

@@ -239,6 +239,7 @@ export type Database = {
           adventure_id: string
           created_at: string
           id: string
+          real_world_date: string | null
           session_date_end: string | null
           session_date_start: string | null
           session_number: number | null
@@ -250,6 +251,7 @@ export type Database = {
           adventure_id: string
           created_at?: string
           id?: string
+          real_world_date?: string | null
           session_date_end?: string | null
           session_date_start?: string | null
           session_number?: number | null
@@ -261,6 +263,7 @@ export type Database = {
           adventure_id?: string
           created_at?: string
           id?: string
+          real_world_date?: string | null
           session_date_end?: string | null
           session_date_start?: string | null
           session_number?: number | null
