@@ -36,7 +36,7 @@ export default function NPCSheet() {
   const { data: character, isLoading } = useCharacter(characterId);
   const { data: adventure } = useAdventure(adventureId);
   const updateCharacter = useUpdateCharacter();
-  const deleteCharacter = useDeleteCharacter();
+  const { canEdit } = useAdventureRole(adventureId);
 
   const [form, setForm] = useState<Partial<CharacterRow>>({});
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
@@ -241,7 +241,21 @@ export default function NPCSheet() {
 
           {/* ── DM Notes ── */}
           <section className="bg-card border border-border rounded-lg p-4" style={{ backgroundColor: 'hsl(225 20% 15%)' }}>
-            <h3 className="font-heading text-sm text-gold mb-3">DM Notes & Secrets</h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-heading text-sm text-gold">DM Notes & Secrets</h3>
+              {canEdit && (
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="npc-dm-notes-visible"
+                    checked={!!form.dm_notes_visible}
+                    onCheckedChange={(checked) => set('dm_notes_visible' as any, !!checked)}
+                  />
+                  <Label htmlFor="npc-dm-notes-visible" className="text-xs text-muted-foreground cursor-pointer">
+                    Visible to Players
+                  </Label>
+                </div>
+              )}
+            </div>
             <div className="bg-muted/50 rounded-md border border-border">
               <EditorContent editor={notesEditor} />
             </div>

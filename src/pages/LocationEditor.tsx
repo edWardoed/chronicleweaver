@@ -26,6 +26,7 @@ export default function LocationEditor() {
   const { data: adventure } = useAdventure(adventureId);
   const updateLocation = useUpdateLocation();
   const deleteLocation = useDeleteLocation();
+  const { canEdit } = useAdventureRole(adventureId);
 
   const [name, setName] = useState('');
   const [type, setType] = useState('Other');
