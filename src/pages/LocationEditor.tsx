@@ -11,6 +11,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Progress } from '@/components/ui/progress';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { useAdventureRole } from '@/hooks/useAdventureRole';
 import { ArrowLeft, Save, Trash2, Upload, X } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -23,10 +26,12 @@ export default function LocationEditor() {
   const { data: adventure } = useAdventure(adventureId);
   const updateLocation = useUpdateLocation();
   const deleteLocation = useDeleteLocation();
+  const { canEdit } = useAdventureRole(adventureId);
 
   const [name, setName] = useState('');
   const [type, setType] = useState('Other');
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [dmNotesVisible, setDmNotesVisible] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
@@ -39,6 +44,7 @@ export default function LocationEditor() {
       setName(location.name);
       setType(location.type ?? 'Other');
       setImageUrl(location.image_url);
+      setDmNotesVisible(location.dm_notes_visible ?? false);
     }
   }, [location]);
 
@@ -77,6 +83,7 @@ export default function LocationEditor() {
         image_url: imageUrl,
         description: descEditor?.getHTML() ?? '',
         dm_notes: dmNotesEditor?.getHTML() ?? '',
+        dm_notes_visible: dmNotesVisible,
       },
       {
         onSuccess: () => { setSaveStatus('saved'); toast.success('Location saved'); },
@@ -92,7 +99,7 @@ export default function LocationEditor() {
     clearTimeout(autosaveRef.current);
     autosaveRef.current = setTimeout(() => handleSave(), 5000);
     return () => clearTimeout(autosaveRef.current);
-  }, [name, type, imageUrl]);
+  }, [name, type, imageUrl, dmNotesVisible]);
 
   const handleImageUpload = async (file: File) => {
     if (file.size > 5 * 1024 * 1024) {
@@ -234,7 +241,21 @@ export default function LocationEditor() {
 
           {/* DM Notes */}
           <section className="bg-card border border-border rounded-lg p-4" style={{ backgroundColor: 'hsl(225 20% 15%)' }}>
-            <h3 className="font-heading text-sm text-gold mb-3">DM Notes (private)</h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-heading text-sm text-gold">DM Notes (private)</h3>
+              {canEdit && (
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="loc-dm-notes-visible"
+                    checked={dmNotesVisible}
+                    onCheckedChange={(checked) => { setDmNotesVisible(!!checked); setSaveStatus('idle'); }}
+                  />
+                  <Label htmlFor="loc-dm-notes-visible" className="text-xs text-muted-foreground cursor-pointer">
+                    Visible to Players
+                  </Label>
+                </div>
+              )}
+            </div>
             <div className="bg-muted/50 rounded-md border border-border">
               <EditorContent editor={dmNotesEditor} />
             </div>
