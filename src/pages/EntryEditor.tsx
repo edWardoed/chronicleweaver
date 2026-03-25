@@ -491,7 +491,7 @@ export default function EntryEditor() {
       </Sheet>
 
       <DeleteEntryDialog
-        entry={existingEntry ?? { id: '', adventure_id: adventureId!, title, story_content: null, session_date_start: null, session_date_end: null, session_number: null, created_at: '', updated_at: '' }}
+        entry={existingEntry ?? { id: '', adventure_id: adventureId!, title, story_content: null, session_date_start: null, session_date_end: null, real_world_date: null, session_number: null, created_at: '', updated_at: '' }}
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
         onConfirm={handleDelete}
