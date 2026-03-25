@@ -99,7 +99,7 @@ export default function LocationEditor() {
     clearTimeout(autosaveRef.current);
     autosaveRef.current = setTimeout(() => handleSave(), 5000);
     return () => clearTimeout(autosaveRef.current);
-  }, [name, type, imageUrl]);
+  }, [name, type, imageUrl, dmNotesVisible]);
 
   const handleImageUpload = async (file: File) => {
     if (file.size > 5 * 1024 * 1024) {
