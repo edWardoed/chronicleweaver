@@ -131,6 +131,7 @@ export default function EntryEditor() {
       session_number: sessionNumber === '' ? undefined : Number(sessionNumber),
       session_date_start: dateStart || undefined,
       session_date_end: isRange ? dateEnd || undefined : undefined,
+      real_world_date: realWorldDate ? format(realWorldDate, 'yyyy-MM-dd') : undefined,
     };
 
     if (realEntryId) {
@@ -152,7 +153,7 @@ export default function EntryEditor() {
         onError: () => { setSaveStatus('idle'); creatingRef.current = false; toast.error('Failed to create'); },
       });
     }
-  }, [title, editor, sessionNumber, dateStart, dateEnd, isRange, realEntryId, adventureId]);
+  }, [title, editor, sessionNumber, dateStart, dateEnd, isRange, realEntryId, adventureId, realWorldDate]);
 
   const handleDelete = () => {
     if (!realEntryId) return;
@@ -280,6 +281,31 @@ export default function EntryEditor() {
 
   const rightSidebarContent = (
     <>
+      <h3 className="font-heading text-xs text-muted-foreground uppercase tracking-wider mb-3">Real World</h3>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            className={cn(
+              "w-full justify-start text-left font-normal h-8 text-xs bg-muted border-border mb-4",
+              !realWorldDate && "text-muted-foreground"
+            )}
+          >
+            <CalendarIcon className="mr-2 h-3 w-3" />
+            {realWorldDate ? format(realWorldDate, "PPP") : "Pick a date"}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="single"
+            selected={realWorldDate}
+            onSelect={setRealWorldDate}
+            initialFocus
+            className="p-3 pointer-events-auto"
+          />
+        </PopoverContent>
+      </Popover>
+
       <h3 className="font-heading text-xs text-muted-foreground uppercase tracking-wider mb-3">Session Date</h3>
       <div className="flex items-center gap-2 mb-3">
         <Switch checked={isRange} onCheckedChange={setIsRange} id="date-range" />
