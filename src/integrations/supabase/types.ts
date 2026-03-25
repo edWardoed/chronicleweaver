@@ -90,6 +90,7 @@ export type Database = {
           death_save_failures: number | null
           death_save_successes: number | null
           dex_score: number | null
+          dm_notes_visible: boolean
           equipment: Json | null
           experience_points: number | null
           features_traits: string | null
@@ -140,6 +141,7 @@ export type Database = {
           death_save_failures?: number | null
           death_save_successes?: number | null
           dex_score?: number | null
+          dm_notes_visible?: boolean
           equipment?: Json | null
           experience_points?: number | null
           features_traits?: string | null
@@ -190,6 +192,7 @@ export type Database = {
           death_save_failures?: number | null
           death_save_successes?: number | null
           dex_score?: number | null
+          dm_notes_visible?: boolean
           equipment?: Json | null
           experience_points?: number | null
           features_traits?: string | null
@@ -353,6 +356,7 @@ export type Database = {
           created_at: string
           description: string | null
           dm_notes: string | null
+          dm_notes_visible: boolean
           id: string
           image_url: string | null
           name: string
@@ -365,6 +369,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           dm_notes?: string | null
+          dm_notes_visible?: boolean
           id?: string
           image_url?: string | null
           name: string
@@ -377,6 +382,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           dm_notes?: string | null
+          dm_notes_visible?: boolean
           id?: string
           image_url?: string | null
           name?: string
