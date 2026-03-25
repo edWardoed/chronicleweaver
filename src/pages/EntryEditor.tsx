@@ -26,6 +26,7 @@ import { Label } from '@/components/ui/label';
 import { DeleteEntryDialog } from '@/components/DeleteEntryDialog';
 import { ArrowLeft, X, Save, MapPin, User, Search, CalendarDays, CalendarIcon } from 'lucide-react';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import type { CharacterRow } from '@/hooks/useCharacters';
 import type { LocationRow } from '@/hooks/useLocations';
