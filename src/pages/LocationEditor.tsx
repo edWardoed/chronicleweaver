@@ -83,6 +83,7 @@ export default function LocationEditor() {
         image_url: imageUrl,
         description: descEditor?.getHTML() ?? '',
         dm_notes: dmNotesEditor?.getHTML() ?? '',
+        dm_notes_visible: dmNotesVisible,
       },
       {
         onSuccess: () => { setSaveStatus('saved'); toast.success('Location saved'); },
@@ -240,7 +241,21 @@ export default function LocationEditor() {
 
           {/* DM Notes */}
           <section className="bg-card border border-border rounded-lg p-4" style={{ backgroundColor: 'hsl(225 20% 15%)' }}>
-            <h3 className="font-heading text-sm text-gold mb-3">DM Notes (private)</h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-heading text-sm text-gold">DM Notes (private)</h3>
+              {canEdit && (
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="loc-dm-notes-visible"
+                    checked={dmNotesVisible}
+                    onCheckedChange={(checked) => { setDmNotesVisible(!!checked); setSaveStatus('idle'); }}
+                  />
+                  <Label htmlFor="loc-dm-notes-visible" className="text-xs text-muted-foreground cursor-pointer">
+                    Visible to Players
+                  </Label>
+                </div>
+              )}
+            </div>
             <div className="bg-muted/50 rounded-md border border-border">
               <EditorContent editor={dmNotesEditor} />
             </div>
