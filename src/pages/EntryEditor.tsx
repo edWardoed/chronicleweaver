@@ -57,6 +57,7 @@ export default function EntryEditor() {
   const [dateStart, setDateStart] = useState('');
   const [dateEnd, setDateEnd] = useState('');
   const [isRange, setIsRange] = useState(false);
+  const [realWorldDate, setRealWorldDate] = useState<Date | undefined>();
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [charSearch, setCharSearch] = useState('');
@@ -84,6 +85,7 @@ export default function EntryEditor() {
       setDateStart(existingEntry.session_date_start ?? '');
       setDateEnd(existingEntry.session_date_end ?? '');
       setIsRange(!!(existingEntry.session_date_end && existingEntry.session_date_end !== existingEntry.session_date_start));
+      setRealWorldDate(existingEntry.real_world_date ? parseISO(existingEntry.real_world_date) : undefined);
     }
   }, [existingEntry]);
 
@@ -112,14 +114,14 @@ export default function EntryEditor() {
       autosaveTimer.current = setTimeout(() => {
         setSaveStatus('saving');
         updateEntry.mutate(
-          { id: realEntryId, story_content: editor.getHTML(), title: title || 'Untitled', session_number: sessionNumber === '' ? undefined : Number(sessionNumber), session_date_start: dateStart || undefined, session_date_end: isRange ? dateEnd || undefined : undefined },
+          { id: realEntryId, story_content: editor.getHTML(), title: title || 'Untitled', session_number: sessionNumber === '' ? undefined : Number(sessionNumber), session_date_start: dateStart || undefined, session_date_end: isRange ? dateEnd || undefined : undefined, real_world_date: realWorldDate ? format(realWorldDate, 'yyyy-MM-dd') : undefined },
           { onSuccess: () => setSaveStatus('saved'), onError: () => { setSaveStatus('idle'); toast.error('Autosave failed'); } }
         );
       }, 3000);
     };
     editor.on('update', handler);
     return () => { editor.off('update', handler); clearTimeout(autosaveTimer.current); };
-  }, [realEntryId, editor, title, sessionNumber, dateStart, dateEnd, isRange]);
+  }, [realEntryId, editor, title, sessionNumber, dateStart, dateEnd, isRange, realWorldDate]);
 
   const handleSave = useCallback(async () => {
     setSaveStatus('saving');
