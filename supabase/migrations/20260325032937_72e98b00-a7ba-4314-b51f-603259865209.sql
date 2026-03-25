@@ -1,0 +1,1 @@
+ALTER TABLE public.entries ADD COLUMN real_world_date date;

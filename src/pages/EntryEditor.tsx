@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { format, parseISO } from 'date-fns';
 import { useAdventure } from '@/hooks/useAdventure';
 import { useEntry, useCreateEntry, useUpdateEntry, useDeleteEntry, useEntries } from '@/hooks/useEntries';
 import { useCharacters } from '@/hooks/useCharacters';
@@ -19,10 +20,13 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
 import { Switch } from '@/components/ui/switch';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Label } from '@/components/ui/label';
 import { DeleteEntryDialog } from '@/components/DeleteEntryDialog';
-import { ArrowLeft, X, Save, MapPin, User, Search, CalendarDays } from 'lucide-react';
+import { ArrowLeft, X, Save, MapPin, User, Search, CalendarDays, CalendarIcon } from 'lucide-react';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import type { CharacterRow } from '@/hooks/useCharacters';
 import type { LocationRow } from '@/hooks/useLocations';
@@ -54,6 +58,7 @@ export default function EntryEditor() {
   const [dateStart, setDateStart] = useState('');
   const [dateEnd, setDateEnd] = useState('');
   const [isRange, setIsRange] = useState(false);
+  const [realWorldDate, setRealWorldDate] = useState<Date | undefined>();
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [charSearch, setCharSearch] = useState('');
@@ -81,6 +86,7 @@ export default function EntryEditor() {
       setDateStart(existingEntry.session_date_start ?? '');
       setDateEnd(existingEntry.session_date_end ?? '');
       setIsRange(!!(existingEntry.session_date_end && existingEntry.session_date_end !== existingEntry.session_date_start));
+      setRealWorldDate(existingEntry.real_world_date ? parseISO(existingEntry.real_world_date) : undefined);
     }
   }, [existingEntry]);
 
@@ -109,14 +115,14 @@ export default function EntryEditor() {
       autosaveTimer.current = setTimeout(() => {
         setSaveStatus('saving');
         updateEntry.mutate(
-          { id: realEntryId, story_content: editor.getHTML(), title: title || 'Untitled', session_number: sessionNumber === '' ? undefined : Number(sessionNumber), session_date_start: dateStart || undefined, session_date_end: isRange ? dateEnd || undefined : undefined },
+          { id: realEntryId, story_content: editor.getHTML(), title: title || 'Untitled', session_number: sessionNumber === '' ? undefined : Number(sessionNumber), session_date_start: dateStart || undefined, session_date_end: isRange ? dateEnd || undefined : undefined, real_world_date: realWorldDate ? format(realWorldDate, 'yyyy-MM-dd') : undefined },
           { onSuccess: () => setSaveStatus('saved'), onError: () => { setSaveStatus('idle'); toast.error('Autosave failed'); } }
         );
       }, 3000);
     };
     editor.on('update', handler);
     return () => { editor.off('update', handler); clearTimeout(autosaveTimer.current); };
-  }, [realEntryId, editor, title, sessionNumber, dateStart, dateEnd, isRange]);
+  }, [realEntryId, editor, title, sessionNumber, dateStart, dateEnd, isRange, realWorldDate]);
 
   const handleSave = useCallback(async () => {
     setSaveStatus('saving');
@@ -126,6 +132,7 @@ export default function EntryEditor() {
       session_number: sessionNumber === '' ? undefined : Number(sessionNumber),
       session_date_start: dateStart || undefined,
       session_date_end: isRange ? dateEnd || undefined : undefined,
+      real_world_date: realWorldDate ? format(realWorldDate, 'yyyy-MM-dd') : undefined,
     };
 
     if (realEntryId) {
@@ -147,7 +154,7 @@ export default function EntryEditor() {
         onError: () => { setSaveStatus('idle'); creatingRef.current = false; toast.error('Failed to create'); },
       });
     }
-  }, [title, editor, sessionNumber, dateStart, dateEnd, isRange, realEntryId, adventureId]);
+  }, [title, editor, sessionNumber, dateStart, dateEnd, isRange, realEntryId, adventureId, realWorldDate]);
 
   const handleDelete = () => {
     if (!realEntryId) return;
@@ -275,6 +282,31 @@ export default function EntryEditor() {
 
   const rightSidebarContent = (
     <>
+      <h3 className="font-heading text-xs text-muted-foreground uppercase tracking-wider mb-3">Real World</h3>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            className={cn(
+              "w-full justify-start text-left font-normal h-8 text-xs bg-muted border-border mb-4",
+              !realWorldDate && "text-muted-foreground"
+            )}
+          >
+            <CalendarIcon className="mr-2 h-3 w-3" />
+            {realWorldDate ? format(realWorldDate, "PPP") : "Pick a date"}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="single"
+            selected={realWorldDate}
+            onSelect={setRealWorldDate}
+            initialFocus
+            className="p-3 pointer-events-auto"
+          />
+        </PopoverContent>
+      </Popover>
+
       <h3 className="font-heading text-xs text-muted-foreground uppercase tracking-wider mb-3">Session Date</h3>
       <div className="flex items-center gap-2 mb-3">
         <Switch checked={isRange} onCheckedChange={setIsRange} id="date-range" />
@@ -459,7 +491,7 @@ export default function EntryEditor() {
       </Sheet>
 
       <DeleteEntryDialog
-        entry={existingEntry ?? { id: '', adventure_id: adventureId!, title, story_content: null, session_date_start: null, session_date_end: null, session_number: null, created_at: '', updated_at: '' }}
+        entry={existingEntry ?? { id: '', adventure_id: adventureId!, title, story_content: null, session_date_start: null, session_date_end: null, real_world_date: null, session_number: null, created_at: '', updated_at: '' }}
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
         onConfirm={handleDelete}
