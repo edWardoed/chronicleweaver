@@ -11,6 +11,7 @@ export interface LocationRow {
   description: string | null;
   notes: string | null;
   dm_notes: string | null;
+  dm_notes_visible: boolean;
   created_at: string;
   updated_at: string;
 }

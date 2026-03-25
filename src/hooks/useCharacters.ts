@@ -51,6 +51,7 @@ export interface CharacterRow {
   physical_description: string | null;
   voice_mannerisms: string | null;
   story_role: string | null;
+  dm_notes_visible: boolean;
 }
 
 export interface EquipmentItem {
