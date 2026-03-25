@@ -31,6 +31,7 @@ export default function LocationEditor() {
   const [name, setName] = useState('');
   const [type, setType] = useState('Other');
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [dmNotesVisible, setDmNotesVisible] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
@@ -43,6 +44,7 @@ export default function LocationEditor() {
       setName(location.name);
       setType(location.type ?? 'Other');
       setImageUrl(location.image_url);
+      setDmNotesVisible(location.dm_notes_visible ?? false);
     }
   }, [location]);
 
