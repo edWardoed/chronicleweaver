@@ -36,6 +36,7 @@ export default function NPCSheet() {
   const { data: character, isLoading } = useCharacter(characterId);
   const { data: adventure } = useAdventure(adventureId);
   const updateCharacter = useUpdateCharacter();
+  const deleteCharacter = useDeleteCharacter();
   const { canEdit } = useAdventureRole(adventureId);
 
   const [form, setForm] = useState<Partial<CharacterRow>>({});
