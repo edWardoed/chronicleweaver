@@ -8,6 +8,8 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useCharacter } from "@/hooks/useCharacters";
 import Index from "./pages/Index.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage.tsx";
+import ResetPasswordPage from "./pages/ResetPasswordPage.tsx";
 import AdminUsersPage from "./pages/AdminUsersPage.tsx";
 import AdventureDashboard from "./pages/AdventureDashboard.tsx";
 import AdventureView from "./pages/AdventureView.tsx";
@@ -36,6 +38,8 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/admin/users" element={<ProtectedRoute requireAdmin><AdminUsersPage /></ProtectedRoute>} />
             <Route path="/adventure/:adventureId" element={<ProtectedRoute><AdventureDashboard /></ProtectedRoute>} />
