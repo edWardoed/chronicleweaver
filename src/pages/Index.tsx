@@ -18,6 +18,7 @@ import emptyScroll from '@/assets/empty-scroll.png';
 export default function Index() {
   const [createOpen, setCreateOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Adventure | null>(null);
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
   const { data: adventures, isLoading } = useAdventures();
   const { data: roleMap } = useAllAdventureRoles();
   const { profile, isAdmin, signOut } = useAuthContext();
@@ -45,6 +46,9 @@ export default function Index() {
             <Users className="w-4 h-4" /> Manage Users
           </Button>
         )}
+        <Button variant="ghost" size="sm" onClick={() => setChangePasswordOpen(true)} className="text-muted-foreground gap-1.5">
+          <KeyRound className="w-4 h-4" /> Change Password
+        </Button>
         <Button variant="ghost" size="sm" onClick={signOut} className="text-muted-foreground gap-1.5">
           <LogOut className="w-4 h-4" /> Sign Out
         </Button>
@@ -122,6 +126,6 @@ export default function Index() {
         open={!!deleteTarget}
         onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}
       />
+      <ChangePasswordDialog open={changePasswordOpen} onOpenChange={setChangePasswordOpen} />
     </div>
-  );
 }
