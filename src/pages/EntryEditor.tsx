@@ -282,6 +282,7 @@ export default function EntryEditor() {
 
   const rightSidebarContent = (
     <>
+      <h2 className="font-heading text-sm font-bold text-foreground mb-3">Timeframe</h2>
       <h3 className="font-heading text-xs text-muted-foreground uppercase tracking-wider mb-3">Real World</h3>
       <Popover>
         <PopoverTrigger asChild>
