@@ -128,4 +128,5 @@ export default function Index() {
       />
       <ChangePasswordDialog open={changePasswordOpen} onOpenChange={setChangePasswordOpen} />
     </div>
+  );
 }
