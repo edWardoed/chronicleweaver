@@ -307,7 +307,7 @@ export default function EntryEditor() {
         </PopoverContent>
       </Popover>
 
-      <h3 className="font-heading text-xs text-muted-foreground uppercase tracking-wider mb-3">Session Date</h3>
+      <h3 className="font-heading text-xs text-muted-foreground uppercase tracking-wider mb-3">In-Game Dates</h3>
       <div className="flex items-center gap-2 mb-3">
         <Switch checked={isRange} onCheckedChange={setIsRange} id="date-range" />
         <Label htmlFor="date-range" className="text-xs text-muted-foreground">Date Range</Label>
