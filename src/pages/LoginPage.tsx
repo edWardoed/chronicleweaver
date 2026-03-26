@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -109,6 +109,13 @@ export default function LoginPage() {
               {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : mode === 'login' ? <LogIn className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
               {mode === 'login' ? 'Sign In' : 'Sign Up'}
             </Button>
+            {mode === 'login' && (
+              <div className="text-center pt-2">
+                <Link to="/forgot-password" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Forgot your password?
+                </Link>
+              </div>
+            )}
           </form>
         </CardContent>
       </Card>
