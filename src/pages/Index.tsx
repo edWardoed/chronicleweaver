@@ -10,7 +10,8 @@ import { Divider } from '@/components/Divider';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus, BookOpen, LogOut, Users, Shield } from 'lucide-react';
+import { Plus, BookOpen, LogOut, Users, Shield, KeyRound } from 'lucide-react';
+import { ChangePasswordDialog } from '@/components/ChangePasswordDialog';
 import type { Adventure } from '@/lib/types';
 import emptyScroll from '@/assets/empty-scroll.png';
 
