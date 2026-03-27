@@ -15,7 +15,7 @@ interface Props {
 const ROLE_LABELS: Record<string, { label: string; className: string }> = {
   dm: { label: 'DM', className: 'bg-gold text-background' },
   scribe: { label: 'Scribe', className: 'bg-burgundy text-foreground' },
-  viewer: { label: 'Viewer', className: '' },
+  player: { label: 'Player', className: '' },
 };
 
 export function AdventureCard({ adventure, role, onView, onEdit, onDelete }: Props) {
