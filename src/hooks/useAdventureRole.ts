@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuthContext } from '@/contexts/AuthContext';
 
-export type AdventureRole = 'dm' | 'scribe' | 'viewer' | null;
+export type AdventureRole = 'dm' | 'scribe' | 'player' | null;
 
 /** Get a single adventure's role for routing decisions */
 export function useAdventureRole(adventureId: string | undefined) {
@@ -18,8 +18,8 @@ export function useAdventureRole(adventureId: string | undefined) {
         .eq('user_id', user!.id)
         .eq('adventure_id', adventureId!)
         .single();
-      if (error || !data) return 'viewer';
-      return (data.role as AdventureRole) ?? 'viewer';
+      if (error || !data) return 'player';
+      return (data.role as AdventureRole) ?? 'player';
     },
     enabled: !!adventureId && !!user,
   });
@@ -33,7 +33,7 @@ export function useAdventureRole(adventureId: string | undefined) {
     canEditLocations: effectiveRole === 'dm' || effectiveRole === 'scribe',
     canEditCharacters: effectiveRole === 'dm',
     canDelete: effectiveRole === 'dm',
-    isViewer: effectiveRole === 'viewer',
+    isViewer: effectiveRole === 'player',
   };
 }
 

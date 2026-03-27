@@ -464,7 +464,7 @@ export type Database = {
       }
     }
     Enums: {
-      adventure_role: "dm" | "scribe" | "viewer"
+      adventure_role: "dm" | "scribe" | "player"
       app_role: "admin" | "user"
     }
     CompositeTypes: {
@@ -593,7 +593,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      adventure_role: ["dm", "scribe", "viewer"],
+      adventure_role: ["dm", "scribe", "player"],
       app_role: ["admin", "user"],
     },
   },

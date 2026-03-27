@@ -29,7 +29,7 @@ interface AccessRow {
 const ADVENTURE_ROLES = [
   { value: 'dm', label: 'DM', description: 'Full edit access' },
   { value: 'scribe', label: 'Scribe', description: 'Edit entries & locations' },
-  { value: 'viewer', label: 'Viewer', description: 'Read-only access' },
+  { value: 'player', label: 'Player', description: 'Read-only access' },
 ];
 
 export default function AdminUsersPage() {

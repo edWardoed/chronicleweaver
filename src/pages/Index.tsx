@@ -92,7 +92,7 @@ export default function Index() {
                   <AdventureCard
                     key={adv.id}
                     adventure={adv}
-                    role={isAdmin ? 'dm' : (roleMap?.[adv.id] ?? 'viewer')}
+                    role={isAdmin ? 'dm' : (roleMap?.[adv.id] ?? 'player')}
                     onView={(id) => navigate(`/adventure/${id}/view`)}
                     onEdit={(id) => handleAdventureNavigate(id)}
                     onDelete={(a) => setDeleteTarget(a)}
