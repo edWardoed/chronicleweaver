@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCharacters, useCreateCharacter, useDeleteCharacter, type CharacterRow } from '@/hooks/useCharacters';
+import { useAdventureRole } from '@/hooks/useAdventureRole';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -26,19 +28,37 @@ interface Props {
 
 export function CharacterList({ adventureId, readOnly }: Props) {
   const navigate = useNavigate();
+  const { user } = useAuthContext();
   const { data: characters, isLoading } = useCharacters(adventureId);
+  const { canEditCharacters, canCreatePC, role } = useAdventureRole(adventureId);
   const createCharacter = useCreateCharacter();
   const deleteCharacter = useDeleteCharacter();
+
+  const isDM = canEditCharacters; // DM has full control
+  const userId = user?.id;
+
+  // Check if current user already has a PC in this adventure
+  const userHasPC = characters?.some(
+    (c) => c.type === 'PC' && c.created_by === userId
+  ) ?? false;
 
   const [addOpen, setAddOpen] = useState(false);
   const [newName, setNewName] = useState('');
   const [newType, setNewType] = useState<'PC' | 'NPC'>('PC');
   const [deleteTarget, setDeleteTarget] = useState<CharacterRow | null>(null);
 
+  // Can the current user add a character?
+  const canAdd = isDM || (canCreatePC && !userHasPC);
+
   const handleCreate = () => {
     if (!newName.trim()) return;
     createCharacter.mutate(
-      { adventure_id: adventureId, name: newName.trim(), type: newType },
+      {
+        adventure_id: adventureId,
+        name: newName.trim(),
+        type: isDM ? newType : 'PC',
+        created_by: userId,
+      },
       {
         onSuccess: (data) => {
           setAddOpen(false);
@@ -62,6 +82,12 @@ export function CharacterList({ adventureId, readOnly }: Props) {
     );
   };
 
+  // Check if user can edit/delete a specific character
+  const canEditChar = (c: CharacterRow) => {
+    if (isDM) return true;
+    return c.type === 'PC' && c.created_by === userId;
+  };
+
   const pcs = characters?.filter((c) => c.type === 'PC') ?? [];
   const npcs = characters?.filter((c) => c.type === 'NPC') ?? [];
 
@@ -71,7 +97,7 @@ export function CharacterList({ adventureId, readOnly }: Props) {
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <Users className="w-16 h-16 text-muted-foreground/30 mb-4" />
           <p className="text-muted-foreground mb-4">No characters yet.</p>
-          {!readOnly && (
+          {canAdd && (
             <Button onClick={() => setAddOpen(true)} variant="outline" className="border-gold/40 text-gold hover:bg-gold/10 font-heading">
               Add your first adventurer
             </Button>
@@ -81,15 +107,19 @@ export function CharacterList({ adventureId, readOnly }: Props) {
     }
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {list.map((c) => (
-          <CharacterCard
-            key={c.id}
-            character={c}
-            onEdit={readOnly ? undefined : () => navigate(`/adventure/${adventureId}/character/${c.id}`)}
-            onDelete={readOnly ? undefined : () => setDeleteTarget(c)}
-            readOnly={readOnly}
-          />
-        ))}
+        {list.map((c) => {
+          const editable = canEditChar(c);
+          return (
+            <CharacterCard
+              key={c.id}
+              character={c}
+              onEdit={editable ? () => navigate(`/adventure/${adventureId}/character/${c.id}`) : undefined}
+              onDelete={editable ? () => setDeleteTarget(c) : undefined}
+              onView={!editable ? () => navigate(`/adventure/${adventureId}/character/${c.id}`) : undefined}
+              readOnly={!editable}
+            />
+          );
+        })}
       </div>
     );
   };
@@ -98,9 +128,9 @@ export function CharacterList({ adventureId, readOnly }: Props) {
     <div className="max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <h2 className="font-heading text-lg text-foreground">Characters</h2>
-        {!readOnly && (
+        {canAdd && (
           <Button onClick={() => setAddOpen(true)} className="bg-burgundy hover:bg-burgundy-light text-foreground font-heading gap-2">
-            <Plus className="w-4 h-4" /> Add Character
+            <Plus className="w-4 h-4" /> {isDM ? 'Add Character' : 'Create My Character'}
           </Button>
         )}
       </div>
@@ -129,27 +159,33 @@ export function CharacterList({ adventureId, readOnly }: Props) {
       )}
 
       {/* Add Character Modal */}
-      {!readOnly && (
+      {canAdd && (
         <Dialog open={addOpen} onOpenChange={setAddOpen}>
           <DialogContent className="bg-card border-border">
             <DialogHeader>
-              <DialogTitle className="font-heading text-gold">New Character</DialogTitle>
-              <DialogDescription>Create a new character for this adventure.</DialogDescription>
+              <DialogTitle className="font-heading text-gold">
+                {isDM ? 'New Character' : 'Create Your Character'}
+              </DialogTitle>
+              <DialogDescription>
+                {isDM ? 'Create a new character for this adventure.' : 'Create your player character for this adventure.'}
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-2">
-              <div>
-                <Label className="text-sm text-muted-foreground">Type</Label>
-                <RadioGroup value={newType} onValueChange={(v) => setNewType(v as 'PC' | 'NPC')} className="flex gap-4 mt-1">
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value="PC" id="type-pc" />
-                    <Label htmlFor="type-pc" className="text-foreground">Player Character</Label>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value="NPC" id="type-npc" />
-                    <Label htmlFor="type-npc" className="text-foreground">NPC</Label>
-                  </div>
-                </RadioGroup>
-              </div>
+              {isDM && (
+                <div>
+                  <Label className="text-sm text-muted-foreground">Type</Label>
+                  <RadioGroup value={newType} onValueChange={(v) => setNewType(v as 'PC' | 'NPC')} className="flex gap-4 mt-1">
+                    <div className="flex items-center gap-2">
+                      <RadioGroupItem value="PC" id="type-pc" />
+                      <Label htmlFor="type-pc" className="text-foreground">Player Character</Label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <RadioGroupItem value="NPC" id="type-npc" />
+                      <Label htmlFor="type-npc" className="text-foreground">NPC</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+              )}
               <div>
                 <Label className="text-sm text-muted-foreground">Name</Label>
                 <Input
@@ -188,14 +224,17 @@ export function CharacterList({ adventureId, readOnly }: Props) {
   );
 }
 
-function CharacterCard({ character, onEdit, onDelete, readOnly }: { character: CharacterRow; onEdit?: () => void; onDelete?: () => void; readOnly?: boolean }) {
+function CharacterCard({ character, onEdit, onDelete, onView, readOnly }: { character: CharacterRow; onEdit?: () => void; onDelete?: () => void; onView?: () => void; readOnly?: boolean }) {
   const isPC = character.type === 'PC';
   const subtitle = isPC
     ? [character.class, character.race].filter(Boolean).join(' · ') || 'No class/race set'
     : character.role_occupation || 'No role set';
 
   return (
-    <div className="bg-card border border-border rounded-lg p-4 flex items-start gap-3 group hover:border-gold/30 transition-colors">
+    <div
+      className="bg-card border border-border rounded-lg p-4 flex items-start gap-3 group hover:border-gold/30 transition-colors cursor-pointer"
+      onClick={onEdit || onView}
+    >
       <Avatar className="w-12 h-12 flex-shrink-0">
         {character.avatar_url ? <AvatarImage src={character.avatar_url} /> : null}
         <AvatarFallback className="bg-muted text-muted-foreground font-heading text-sm">
@@ -216,8 +255,8 @@ function CharacterCard({ character, onEdit, onDelete, readOnly }: { character: C
       </div>
       {!readOnly && (
         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onEdit}><Pencil className="w-3.5 h-3.5" /></Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={onDelete}><Trash2 className="w-3.5 h-3.5" /></Button>
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); onEdit?.(); }}><Pencil className="w-3.5 h-3.5" /></Button>
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={(e) => { e.stopPropagation(); onDelete?.(); }}><Trash2 className="w-3.5 h-3.5" /></Button>
         </div>
       )}
     </div>
