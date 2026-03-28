@@ -233,12 +233,12 @@ export default function CharacterSheet() {
           <section className="bg-card border border-border rounded-lg p-4">
             <div className="flex flex-wrap gap-4">
               {/* Avatar */}
-              <label className="cursor-pointer flex-shrink-0">
+              <label className={`flex-shrink-0 ${isReadOnly ? 'cursor-default' : 'cursor-pointer'}`}>
                 <Avatar className="w-20 h-20">
                   {form.avatar_url ? <AvatarImage src={form.avatar_url as string} /> : null}
                   <AvatarFallback className="bg-muted text-muted-foreground font-heading text-lg">{(form.name as string)?.slice(0, 2).toUpperCase()}</AvatarFallback>
                 </Avatar>
-                <input type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+                {!isReadOnly && <input type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />}
               </label>
               <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-3 min-w-0">
                 <div className="col-span-2">
@@ -583,15 +583,19 @@ export default function CharacterSheet() {
 
       {/* Footer */}
       <footer className="border-t border-border px-4 py-3 flex items-center gap-3">
-        <Button onClick={handleSave} className="bg-burgundy hover:bg-burgundy-light text-foreground font-heading gap-2">
-          <Save className="w-4 h-4" /> Save
-        </Button>
-        <Button variant="outline" onClick={() => { handleSave(); navigate(`/adventure/${adventureId}`); }} className="border-border">
+        {!isReadOnly && (
+          <Button onClick={handleSave} className="bg-burgundy hover:bg-burgundy-light text-foreground font-heading gap-2">
+            <Save className="w-4 h-4" /> Save
+          </Button>
+        )}
+        <Button variant="outline" onClick={() => { if (!isReadOnly) handleSave(); navigate(`/adventure/${adventureId}`); }} className="border-border">
           Back
         </Button>
-        <Button variant="destructive" onClick={() => setDeleteOpen(true)} className="ml-auto">
-          <Trash2 className="w-4 h-4 mr-1" /> Delete
-        </Button>
+        {!isReadOnly && (
+          <Button variant="destructive" onClick={() => setDeleteOpen(true)} className="ml-auto">
+            <Trash2 className="w-4 h-4 mr-1" /> Delete
+          </Button>
+        )}
       </footer>
 
       <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
