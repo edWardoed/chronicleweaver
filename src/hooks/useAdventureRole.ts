@@ -32,6 +32,7 @@ export function useAdventureRole(adventureId: string | undefined) {
     canEditEntries: effectiveRole === 'dm' || effectiveRole === 'scribe',
     canEditLocations: effectiveRole === 'dm' || effectiveRole === 'scribe',
     canEditCharacters: effectiveRole === 'dm',
+    canCreatePC: effectiveRole === 'dm' || effectiveRole === 'scribe' || effectiveRole === 'player',
     canDelete: effectiveRole === 'dm',
     isViewer: effectiveRole === 'player',
   };
