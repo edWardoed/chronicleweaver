@@ -227,7 +227,7 @@ export default function CharacterSheet() {
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-4 md:p-6">
-        <div className="max-w-5xl mx-auto space-y-6">
+        <fieldset disabled={isReadOnly} className="max-w-5xl mx-auto space-y-6">
 
           {/* ── Header Row ── */}
           <section className="bg-card border border-border rounded-lg p-4">
@@ -578,7 +578,7 @@ export default function CharacterSheet() {
             </div>
           </section>
 
-        </div>
+        </fieldset>
       </div>
 
       {/* Footer */}
