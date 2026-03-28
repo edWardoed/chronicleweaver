@@ -82,12 +82,14 @@ export default function CharacterSheet() {
   const featuresEditor = useEditor({
     extensions: [StarterKit],
     content: character?.features_traits ?? '',
+    editable: !isReadOnly,
     editorProps: { attributes: { class: 'prose prose-invert prose-sm max-w-none min-h-[150px] focus:outline-none p-3' } },
   });
 
   const notesEditor = useEditor({
     extensions: [StarterKit],
     content: character?.notes ?? '',
+    editable: !isReadOnly,
     editorProps: { attributes: { class: 'prose prose-invert prose-sm max-w-none min-h-[150px] focus:outline-none p-3' } },
   });
 
@@ -113,7 +115,7 @@ export default function CharacterSheet() {
   }, [set]);
 
   const handleSave = useCallback(async () => {
-    if (!characterId) return;
+    if (!characterId || isReadOnly) return;
     setSaveStatus('saving');
     const payload: Record<string, unknown> = {
       ...form,
@@ -138,7 +140,7 @@ export default function CharacterSheet() {
   // Autosave
   const autosaveRef = useRef<ReturnType<typeof setTimeout>>();
   useEffect(() => {
-    if (!loaded.current || saveStatus === 'saving') return;
+    if (!loaded.current || saveStatus === 'saving' || isReadOnly) return;
     clearTimeout(autosaveRef.current);
     autosaveRef.current = setTimeout(() => { handleSave(); }, 5000);
     return () => clearTimeout(autosaveRef.current);
@@ -214,9 +216,13 @@ export default function CharacterSheet() {
             </BreadcrumbList>
           </Breadcrumb>
         </div>
-        <Badge variant={saveStatus === 'saved' ? 'secondary' : saveStatus === 'saving' ? 'outline' : 'default'} className="text-xs">
-          {saveStatus === 'saving' ? 'Saving…' : saveStatus === 'saved' ? 'Saved' : 'Unsaved'}
-        </Badge>
+        {isReadOnly ? (
+          <Badge variant="outline" className="text-xs border-muted-foreground/40 text-muted-foreground">Read Only</Badge>
+        ) : (
+          <Badge variant={saveStatus === 'saved' ? 'secondary' : saveStatus === 'saving' ? 'outline' : 'default'} className="text-xs">
+            {saveStatus === 'saving' ? 'Saving…' : saveStatus === 'saved' ? 'Saved' : 'Unsaved'}
+          </Badge>
+        )}
       </header>
 
       {/* Content */}
