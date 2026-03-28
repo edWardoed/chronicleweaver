@@ -21,7 +21,7 @@ export function useLocations(adventureId: string) {
     queryKey: ['locations', adventureId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('locations')
+        .from('locations_safe' as any)
         .select('*')
         .eq('adventure_id', adventureId)
         .order('name');
@@ -37,7 +37,7 @@ export function useLocation(id: string | undefined) {
     queryKey: ['location', id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('locations')
+        .from('locations_safe' as any)
         .select('*')
         .eq('id', id!)
         .single();
