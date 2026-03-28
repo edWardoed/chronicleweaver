@@ -52,6 +52,7 @@ export interface CharacterRow {
   voice_mannerisms: string | null;
   story_role: string | null;
   dm_notes_visible: boolean;
+  created_by: string | null;
 }
 
 export interface EquipmentItem {
@@ -106,7 +107,7 @@ export function useCharacter(id: string | undefined) {
 export function useCreateCharacter() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (char: { adventure_id: string; name: string; type: string }) => {
+    mutationFn: async (char: { adventure_id: string; name: string; type: string; created_by?: string }) => {
       const { data, error } = await supabase.from('characters').insert(char).select().single();
       if (error) throw error;
       return data;

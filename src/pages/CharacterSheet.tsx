@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCharacter, useUpdateCharacter, useDeleteCharacter, uploadAvatarImage, type CharacterRow, type EquipmentItem, type SpellRow } from '@/hooks/useCharacters';
 import { useAdventure } from '@/hooks/useAdventure';
+import { useAdventureRole } from '@/hooks/useAdventureRole';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { Button } from '@/components/ui/button';
@@ -49,8 +51,14 @@ export default function CharacterSheet() {
   const navigate = useNavigate();
   const { data: character, isLoading } = useCharacter(characterId);
   const { data: adventure } = useAdventure(adventureId);
+  const { canEditCharacters } = useAdventureRole(adventureId);
+  const { user } = useAuthContext();
   const updateCharacter = useUpdateCharacter();
   const deleteCharacter = useDeleteCharacter();
+
+  // Determine if user can edit this character
+  const canEditThisChar = canEditCharacters || (character?.type === 'PC' && character?.created_by === user?.id);
+  const isReadOnly = !canEditThisChar;
 
   const [form, setForm] = useState<Partial<CharacterRow>>({});
   const [equipment, setEquipment] = useState<EquipmentItem[]>([]);
@@ -74,12 +82,14 @@ export default function CharacterSheet() {
   const featuresEditor = useEditor({
     extensions: [StarterKit],
     content: character?.features_traits ?? '',
+    editable: !isReadOnly,
     editorProps: { attributes: { class: 'prose prose-invert prose-sm max-w-none min-h-[150px] focus:outline-none p-3' } },
   });
 
   const notesEditor = useEditor({
     extensions: [StarterKit],
     content: character?.notes ?? '',
+    editable: !isReadOnly,
     editorProps: { attributes: { class: 'prose prose-invert prose-sm max-w-none min-h-[150px] focus:outline-none p-3' } },
   });
 
@@ -105,7 +115,7 @@ export default function CharacterSheet() {
   }, [set]);
 
   const handleSave = useCallback(async () => {
-    if (!characterId) return;
+    if (!characterId || isReadOnly) return;
     setSaveStatus('saving');
     const payload: Record<string, unknown> = {
       ...form,
@@ -130,7 +140,7 @@ export default function CharacterSheet() {
   // Autosave
   const autosaveRef = useRef<ReturnType<typeof setTimeout>>();
   useEffect(() => {
-    if (!loaded.current || saveStatus === 'saving') return;
+    if (!loaded.current || saveStatus === 'saving' || isReadOnly) return;
     clearTimeout(autosaveRef.current);
     autosaveRef.current = setTimeout(() => { handleSave(); }, 5000);
     return () => clearTimeout(autosaveRef.current);
@@ -206,25 +216,29 @@ export default function CharacterSheet() {
             </BreadcrumbList>
           </Breadcrumb>
         </div>
-        <Badge variant={saveStatus === 'saved' ? 'secondary' : saveStatus === 'saving' ? 'outline' : 'default'} className="text-xs">
-          {saveStatus === 'saving' ? 'Saving…' : saveStatus === 'saved' ? 'Saved' : 'Unsaved'}
-        </Badge>
+        {isReadOnly ? (
+          <Badge variant="outline" className="text-xs border-muted-foreground/40 text-muted-foreground">Read Only</Badge>
+        ) : (
+          <Badge variant={saveStatus === 'saved' ? 'secondary' : saveStatus === 'saving' ? 'outline' : 'default'} className="text-xs">
+            {saveStatus === 'saving' ? 'Saving…' : saveStatus === 'saved' ? 'Saved' : 'Unsaved'}
+          </Badge>
+        )}
       </header>
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-4 md:p-6">
-        <div className="max-w-5xl mx-auto space-y-6">
+        <fieldset disabled={isReadOnly} className="max-w-5xl mx-auto space-y-6">
 
           {/* ── Header Row ── */}
           <section className="bg-card border border-border rounded-lg p-4">
             <div className="flex flex-wrap gap-4">
               {/* Avatar */}
-              <label className="cursor-pointer flex-shrink-0">
+              <label className={`flex-shrink-0 ${isReadOnly ? 'cursor-default' : 'cursor-pointer'}`}>
                 <Avatar className="w-20 h-20">
                   {form.avatar_url ? <AvatarImage src={form.avatar_url as string} /> : null}
                   <AvatarFallback className="bg-muted text-muted-foreground font-heading text-lg">{(form.name as string)?.slice(0, 2).toUpperCase()}</AvatarFallback>
                 </Avatar>
-                <input type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+                {!isReadOnly && <input type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />}
               </label>
               <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-3 min-w-0">
                 <div className="col-span-2">
@@ -564,20 +578,24 @@ export default function CharacterSheet() {
             </div>
           </section>
 
-        </div>
+        </fieldset>
       </div>
 
       {/* Footer */}
       <footer className="border-t border-border px-4 py-3 flex items-center gap-3">
-        <Button onClick={handleSave} className="bg-burgundy hover:bg-burgundy-light text-foreground font-heading gap-2">
-          <Save className="w-4 h-4" /> Save
-        </Button>
-        <Button variant="outline" onClick={() => { handleSave(); navigate(`/adventure/${adventureId}`); }} className="border-border">
+        {!isReadOnly && (
+          <Button onClick={handleSave} className="bg-burgundy hover:bg-burgundy-light text-foreground font-heading gap-2">
+            <Save className="w-4 h-4" /> Save
+          </Button>
+        )}
+        <Button variant="outline" onClick={() => { if (!isReadOnly) handleSave(); navigate(`/adventure/${adventureId}`); }} className="border-border">
           Back
         </Button>
-        <Button variant="destructive" onClick={() => setDeleteOpen(true)} className="ml-auto">
-          <Trash2 className="w-4 h-4 mr-1" /> Delete
-        </Button>
+        {!isReadOnly && (
+          <Button variant="destructive" onClick={() => setDeleteOpen(true)} className="ml-auto">
+            <Trash2 className="w-4 h-4 mr-1" /> Delete
+          </Button>
+        )}
       </footer>
 
       <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
