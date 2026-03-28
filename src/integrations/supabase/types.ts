@@ -86,6 +86,7 @@ export type Database = {
           class: string | null
           con_score: number | null
           created_at: string
+          created_by: string | null
           current_hp: number | null
           death_save_failures: number | null
           death_save_successes: number | null
@@ -137,6 +138,7 @@ export type Database = {
           class?: string | null
           con_score?: number | null
           created_at?: string
+          created_by?: string | null
           current_hp?: number | null
           death_save_failures?: number | null
           death_save_successes?: number | null
@@ -188,6 +190,7 @@ export type Database = {
           class?: string | null
           con_score?: number | null
           created_at?: string
+          created_by?: string | null
           current_hp?: number | null
           death_save_failures?: number | null
           death_save_successes?: number | null
@@ -460,6 +463,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      user_has_pc_in_adventure: {
+        Args: { _adventure_id: string; _user_id: string }
         Returns: boolean
       }
     }
