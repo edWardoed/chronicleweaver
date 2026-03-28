@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCharacter, useUpdateCharacter, useDeleteCharacter, uploadAvatarImage, type CharacterRow, type EquipmentItem, type SpellRow } from '@/hooks/useCharacters';
 import { useAdventure } from '@/hooks/useAdventure';
+import { useAdventureRole } from '@/hooks/useAdventureRole';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { Button } from '@/components/ui/button';
@@ -49,8 +51,14 @@ export default function CharacterSheet() {
   const navigate = useNavigate();
   const { data: character, isLoading } = useCharacter(characterId);
   const { data: adventure } = useAdventure(adventureId);
+  const { canEditCharacters } = useAdventureRole(adventureId);
+  const { user } = useAuthContext();
   const updateCharacter = useUpdateCharacter();
   const deleteCharacter = useDeleteCharacter();
+
+  // Determine if user can edit this character
+  const canEditThisChar = canEditCharacters || (character?.type === 'PC' && character?.created_by === user?.id);
+  const isReadOnly = !canEditThisChar;
 
   const [form, setForm] = useState<Partial<CharacterRow>>({});
   const [equipment, setEquipment] = useState<EquipmentItem[]>([]);
