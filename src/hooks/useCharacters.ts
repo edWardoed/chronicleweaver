@@ -77,7 +77,7 @@ export function useCharacters(adventureId: string) {
     queryKey: ['characters', adventureId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('characters')
+        .from('characters_safe' as any)
         .select('*')
         .eq('adventure_id', adventureId)
         .order('name');
@@ -93,7 +93,7 @@ export function useCharacter(id: string | undefined) {
     queryKey: ['character', id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('characters')
+        .from('characters_safe' as any)
         .select('*')
         .eq('id', id!)
         .single();
