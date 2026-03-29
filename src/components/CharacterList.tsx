@@ -30,11 +30,12 @@ export function CharacterList({ adventureId, readOnly }: Props) {
   const navigate = useNavigate();
   const { user } = useAuthContext();
   const { data: characters, isLoading } = useCharacters(adventureId);
-  const { canEditCharacters, canCreatePC, role } = useAdventureRole(adventureId);
+  const { canEditCharacters, canCreatePC, canCreateNPC, role } = useAdventureRole(adventureId);
   const createCharacter = useCreateCharacter();
   const deleteCharacter = useDeleteCharacter();
 
   const isDM = canEditCharacters; // DM has full control
+  const isScribe = role === 'scribe';
   const userId = user?.id;
 
   // Check if current user already has a PC in this adventure
@@ -48,7 +49,8 @@ export function CharacterList({ adventureId, readOnly }: Props) {
   const [deleteTarget, setDeleteTarget] = useState<CharacterRow | null>(null);
 
   // Can the current user add a character?
-  const canAdd = isDM || (canCreatePC && !userHasPC);
+  // DMs: always. Scribes: always (can create NPCs, and PC if they don't have one). Players: only if no PC yet.
+  const canAdd = isDM || (isScribe) || (canCreatePC && !userHasPC);
 
   const handleCreate = () => {
     if (!newName.trim()) return;
@@ -56,7 +58,7 @@ export function CharacterList({ adventureId, readOnly }: Props) {
       {
         adventure_id: adventureId,
         name: newName.trim(),
-        type: isDM ? newType : 'PC',
+        type: isDM ? newType : (isScribe ? newType : 'PC'),
         created_by: userId,
       },
       {
@@ -85,7 +87,9 @@ export function CharacterList({ adventureId, readOnly }: Props) {
   // Check if user can edit/delete a specific character
   const canEditChar = (c: CharacterRow) => {
     if (isDM) return true;
-    return c.type === 'PC' && c.created_by === userId;
+    if (c.created_by === userId && c.type === 'PC') return true;
+    if (isScribe && c.created_by === userId && c.type === 'NPC') return true;
+    return false;
   };
 
   const pcs = characters?.filter((c) => c.type === 'PC') ?? [];
@@ -129,8 +133,8 @@ export function CharacterList({ adventureId, readOnly }: Props) {
       <div className="flex items-center justify-between mb-6">
         <h2 className="font-heading text-lg text-foreground">Characters</h2>
         {canAdd && (
-          <Button onClick={() => setAddOpen(true)} className="bg-burgundy hover:bg-burgundy-light text-foreground font-heading gap-2">
-            <Plus className="w-4 h-4" /> {isDM ? 'Add Character' : 'Create My Character'}
+          <Button onClick={() => { setNewType(isScribe && userHasPC ? 'NPC' : 'PC'); setAddOpen(true); }} className="bg-burgundy hover:bg-burgundy-light text-foreground font-heading gap-2">
+            <Plus className="w-4 h-4" /> {isDM ? 'Add Character' : (isScribe ? 'Add Character' : 'Create My Character')}
           </Button>
         )}
       </div>
@@ -164,20 +168,22 @@ export function CharacterList({ adventureId, readOnly }: Props) {
           <DialogContent className="bg-card border-border">
             <DialogHeader>
               <DialogTitle className="font-heading text-gold">
-                {isDM ? 'New Character' : 'Create Your Character'}
+                {isDM ? 'New Character' : (isScribe ? 'New Character' : 'Create Your Character')}
               </DialogTitle>
               <DialogDescription>
-                {isDM ? 'Create a new character for this adventure.' : 'Create your player character for this adventure.'}
+                {isDM ? 'Create a new character for this adventure.' : (isScribe ? 'Create a character for this adventure.' : 'Create your player character for this adventure.')}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-2">
-              {isDM && (
+              {(isDM || isScribe) && (
                 <div>
                   <Label className="text-sm text-muted-foreground">Type</Label>
                   <RadioGroup value={newType} onValueChange={(v) => setNewType(v as 'PC' | 'NPC')} className="flex gap-4 mt-1">
                     <div className="flex items-center gap-2">
-                      <RadioGroupItem value="PC" id="type-pc" />
-                      <Label htmlFor="type-pc" className="text-foreground">Player Character</Label>
+                      <RadioGroupItem value="PC" id="type-pc" disabled={!isDM && userHasPC} />
+                      <Label htmlFor="type-pc" className={`text-foreground ${!isDM && userHasPC ? 'opacity-50' : ''}`}>
+                        Player Character {!isDM && userHasPC ? '(already created)' : ''}
+                      </Label>
                     </div>
                     <div className="flex items-center gap-2">
                       <RadioGroupItem value="NPC" id="type-npc" />
