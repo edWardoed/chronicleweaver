@@ -1,40 +1,35 @@
 
 
-## Plan: Allow Players & Scribes to Own 1 PC Per Adventure
+## Plan: Allow Scribes to Create & Edit NPCs
 
 ### Summary
-Players and scribes can each create and edit **one player character (PC)** per adventure. DMs retain full control over all characters and NPCs.
+Expand scribe permissions so they can create and edit NPCs in addition to their one PC. DMs retain full control.
 
-### Database Changes
+### Database Changes (1 migration)
 
-1. **Add `created_by` column to `characters` table** (migration)
-   - `ALTER TABLE characters ADD COLUMN created_by uuid REFERENCES auth.users(id) ON DELETE SET NULL;`
-   - Set existing characters' `created_by` to null (no owner)
+1. **Update RLS policies on `characters` table**:
+   - **INSERT**: Add a new policy allowing scribes to insert NPCs (`type = 'NPC'` and `created_by = auth.uid()` and role is `scribe`)
+   - **UPDATE**: Add a new policy allowing scribes to update NPCs they created (`type = 'NPC'` and `created_by = auth.uid()` and role is `scribe`)
+   - **DELETE**: Add a new policy allowing scribes to delete NPCs they created (`type = 'NPC'` and `created_by = auth.uid()` and role is `scribe`)
 
-2. **Add RLS policies for player/scribe PC ownership**:
-   - **INSERT policy**: Players and scribes with adventure access can insert a PC if they don't already have one in that adventure. Uses a subquery check: `NOT EXISTS (SELECT 1 FROM characters WHERE adventure_id = ... AND created_by = auth.uid() AND type = 'PC')`. The `created_by` must equal `auth.uid()` and `type` must be `'PC'`.
-   - **UPDATE policy**: Players and scribes can update characters where `created_by = auth.uid()` and `type = 'PC'`.
-   - **DELETE policy**: Players and scribes can delete their own PC (`created_by = auth.uid()` and `type = 'PC'`).
+   Alternatively, broaden the existing `Player/Scribe can insert/update/delete own PC` policies to also cover scribe+NPC. Since scribes should be able to create *any number* of NPCs (no limit like PCs), it's cleaner to add separate scribe-NPC policies.
 
-3. **Create a security definer function** `owns_character_pc` to safely check if a user already has a PC in an adventure (avoids RLS recursion).
+2. **Update `characters_safe` view**: No changes needed — the view already returns all characters the user can SELECT.
 
 ### Frontend Changes
 
-4. **`useAdventureRole.ts`** — Remove `canEditCharacters: effectiveRole === 'dm'` restriction. Add a new helper like `canCreatePC` and `canEditOwnPC`.
+3. **`src/hooks/useAdventureRole.ts`** — Add `canCreateNPC` helper: `effectiveRole === 'dm' || effectiveRole === 'scribe'`.
 
-5. **`useCharacters.ts`** — Update `useCreateCharacter` to include `created_by` (current user ID) in the insert payload.
+4. **`src/components/CharacterList.tsx`**:
+   - Scribes see the "Add Character" button with the option to create NPCs (in addition to their one PC)
+   - When a scribe opens the create dialog, show the PC/NPC radio (like DMs), but PC option is disabled if they already have one
+   - Scribes can edit/delete NPCs they created (`created_by === userId` and `type === 'NPC'`), plus their own PC
 
-6. **`CharacterList.tsx`** — Key changes:
-   - Players/scribes see an "Add Character" button but only for PCs, and only if they don't already have one
-   - Players/scribes can only edit/delete their own PC (check `created_by` against current user)
-   - DMs see the full UI (create any type, edit/delete all)
-   - Hide NPC creation option for non-DM roles
-
-7. **`CharacterSheet.tsx`** — Add ownership check: non-DM users can only edit if `character.created_by === currentUser.id` and `character.type === 'PC'`. Otherwise render read-only.
+5. **`src/pages/CharacterSheet.tsx`**:
+   - Update `canEditThisChar` logic: also allow editing if the user is a scribe and `character.created_by === user.id` (covers both their PC and their NPCs)
 
 ### Technical Details
-
-- The 1-PC-per-adventure limit is enforced at both the database level (RLS insert policy with NOT EXISTS check) and the UI level (hiding the button when a PC already exists).
-- `created_by` is nullable to handle legacy/DM-created characters.
-- DM policies (`get_adventure_role = 'dm'`) and admin policies remain unchanged and take precedence.
+- NPC creation by scribes has no limit (unlike the 1-PC rule)
+- Scribe NPC ownership is tracked via `created_by` — scribes can only edit/delete NPCs they created, not NPCs created by the DM
+- The `canAdd` logic changes: scribes always see the add button (they can always create NPCs, even if they already have a PC)
 
