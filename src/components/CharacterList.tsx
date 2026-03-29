@@ -133,8 +133,8 @@ export function CharacterList({ adventureId, readOnly }: Props) {
       <div className="flex items-center justify-between mb-6">
         <h2 className="font-heading text-lg text-foreground">Characters</h2>
         {canAdd && (
-          <Button onClick={() => setAddOpen(true)} className="bg-burgundy hover:bg-burgundy-light text-foreground font-heading gap-2">
-            <Plus className="w-4 h-4" /> {isDM ? 'Add Character' : 'Create My Character'}
+          <Button onClick={() => { setNewType(isScribe && userHasPC ? 'NPC' : 'PC'); setAddOpen(true); }} className="bg-burgundy hover:bg-burgundy-light text-foreground font-heading gap-2">
+            <Plus className="w-4 h-4" /> {isDM ? 'Add Character' : (isScribe ? 'Add Character' : 'Create My Character')}
           </Button>
         )}
       </div>
