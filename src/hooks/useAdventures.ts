@@ -44,12 +44,14 @@ export function useDeleteAdventure() {
 }
 
 export async function uploadCoverImage(file: File): Promise<string> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Must be logged in to upload images');
   const ext = file.name.split('.').pop();
-  const fileName = `${crypto.randomUUID()}.${ext}`;
+  const filePath = `${user.id}/${crypto.randomUUID()}.${ext}`;
   const { error } = await supabase.storage
     .from('adventure-images')
-    .upload(fileName, file);
+    .upload(filePath, file);
   if (error) throw error;
-  const { data } = supabase.storage.from('adventure-images').getPublicUrl(fileName);
+  const { data } = supabase.storage.from('adventure-images').getPublicUrl(filePath);
   return data.publicUrl;
 }
