@@ -168,20 +168,22 @@ export function CharacterList({ adventureId, readOnly }: Props) {
           <DialogContent className="bg-card border-border">
             <DialogHeader>
               <DialogTitle className="font-heading text-gold">
-                {isDM ? 'New Character' : 'Create Your Character'}
+                {isDM ? 'New Character' : (isScribe ? 'New Character' : 'Create Your Character')}
               </DialogTitle>
               <DialogDescription>
-                {isDM ? 'Create a new character for this adventure.' : 'Create your player character for this adventure.'}
+                {isDM ? 'Create a new character for this adventure.' : (isScribe ? 'Create a character for this adventure.' : 'Create your player character for this adventure.')}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-2">
-              {isDM && (
+              {(isDM || isScribe) && (
                 <div>
                   <Label className="text-sm text-muted-foreground">Type</Label>
                   <RadioGroup value={newType} onValueChange={(v) => setNewType(v as 'PC' | 'NPC')} className="flex gap-4 mt-1">
                     <div className="flex items-center gap-2">
-                      <RadioGroupItem value="PC" id="type-pc" />
-                      <Label htmlFor="type-pc" className="text-foreground">Player Character</Label>
+                      <RadioGroupItem value="PC" id="type-pc" disabled={!isDM && userHasPC} />
+                      <Label htmlFor="type-pc" className={`text-foreground ${!isDM && userHasPC ? 'opacity-50' : ''}`}>
+                        Player Character {!isDM && userHasPC ? '(already created)' : ''}
+                      </Label>
                     </div>
                     <div className="flex items-center gap-2">
                       <RadioGroupItem value="NPC" id="type-npc" />
