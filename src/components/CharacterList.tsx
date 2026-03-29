@@ -35,6 +35,7 @@ export function CharacterList({ adventureId, readOnly }: Props) {
   const deleteCharacter = useDeleteCharacter();
 
   const isDM = canEditCharacters; // DM has full control
+  const isScribe = role === 'scribe';
   const userId = user?.id;
 
   // Check if current user already has a PC in this adventure
@@ -48,7 +49,8 @@ export function CharacterList({ adventureId, readOnly }: Props) {
   const [deleteTarget, setDeleteTarget] = useState<CharacterRow | null>(null);
 
   // Can the current user add a character?
-  const canAdd = isDM || (canCreatePC && !userHasPC);
+  // DMs: always. Scribes: always (can create NPCs, and PC if they don't have one). Players: only if no PC yet.
+  const canAdd = isDM || (isScribe) || (canCreatePC && !userHasPC);
 
   const handleCreate = () => {
     if (!newName.trim()) return;
@@ -56,7 +58,7 @@ export function CharacterList({ adventureId, readOnly }: Props) {
       {
         adventure_id: adventureId,
         name: newName.trim(),
-        type: isDM ? newType : 'PC',
+        type: isDM ? newType : (isScribe ? newType : 'PC'),
         created_by: userId,
       },
       {
@@ -85,7 +87,9 @@ export function CharacterList({ adventureId, readOnly }: Props) {
   // Check if user can edit/delete a specific character
   const canEditChar = (c: CharacterRow) => {
     if (isDM) return true;
-    return c.type === 'PC' && c.created_by === userId;
+    if (c.created_by === userId && c.type === 'PC') return true;
+    if (isScribe && c.created_by === userId && c.type === 'NPC') return true;
+    return false;
   };
 
   const pcs = characters?.filter((c) => c.type === 'PC') ?? [];
