@@ -30,7 +30,7 @@ export function CharacterList({ adventureId, readOnly }: Props) {
   const navigate = useNavigate();
   const { user } = useAuthContext();
   const { data: characters, isLoading } = useCharacters(adventureId);
-  const { canEditCharacters, canCreatePC, role } = useAdventureRole(adventureId);
+  const { canEditCharacters, canCreatePC, canCreateNPC, role } = useAdventureRole(adventureId);
   const createCharacter = useCreateCharacter();
   const deleteCharacter = useDeleteCharacter();
 

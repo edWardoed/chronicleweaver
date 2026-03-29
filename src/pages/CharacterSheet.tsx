@@ -51,13 +51,14 @@ export default function CharacterSheet() {
   const navigate = useNavigate();
   const { data: character, isLoading } = useCharacter(characterId);
   const { data: adventure } = useAdventure(adventureId);
-  const { canEditCharacters } = useAdventureRole(adventureId);
+  const { canEditCharacters, role } = useAdventureRole(adventureId);
   const { user } = useAuthContext();
   const updateCharacter = useUpdateCharacter();
   const deleteCharacter = useDeleteCharacter();
 
   // Determine if user can edit this character
-  const canEditThisChar = canEditCharacters || (character?.type === 'PC' && character?.created_by === user?.id);
+  const isOwner = character?.created_by === user?.id;
+  const canEditThisChar = canEditCharacters || (isOwner && (character?.type === 'PC' || (character?.type === 'NPC' && role === 'scribe')));
   const isReadOnly = !canEditThisChar;
 
   const [form, setForm] = useState<Partial<CharacterRow>>({});
