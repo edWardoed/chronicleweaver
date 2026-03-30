@@ -265,7 +265,7 @@ export default function LocationEditor() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-border px-4 py-3 flex items-center gap-3">
+      <footer className="sticky bottom-0 z-10 bg-background border-t border-border px-4 py-3 flex items-center gap-3">
         <Button onClick={() => { handleSave(); navigate(`/adventure/${adventureId}`); }} className="bg-burgundy hover:bg-burgundy-light text-foreground font-heading gap-2">
           <Save className="w-4 h-4" /> Save & Return
         </Button>
