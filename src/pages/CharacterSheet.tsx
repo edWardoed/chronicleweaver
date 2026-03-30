@@ -583,7 +583,7 @@ export default function CharacterSheet() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-border px-4 py-3 flex items-center gap-3">
+      <footer className="sticky bottom-0 z-10 bg-background border-t border-border px-4 py-3 flex items-center gap-3">
         {!isReadOnly && (
           <Button onClick={handleSave} className="bg-burgundy hover:bg-burgundy-light text-foreground font-heading gap-2">
             <Save className="w-4 h-4" /> Save
