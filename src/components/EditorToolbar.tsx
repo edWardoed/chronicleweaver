@@ -50,8 +50,14 @@ export function EditorToolbar({ editor }: Props) {
       return;
     }
     setUploading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast.error('You must be logged in to upload images');
+      setUploading(false);
+      return;
+    }
     const ext = file.name.split('.').pop();
-    const path = `entry-images/${crypto.randomUUID()}.${ext}`;
+    const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
     const { error } = await supabase.storage.from('adventure-images').upload(path, file);
     if (error) {
       toast.error('Upload failed');
