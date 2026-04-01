@@ -1,0 +1,1 @@
+ALTER TABLE public.adventures ADD COLUMN location_types text[] DEFAULT ARRAY['City','Town','Village','Dungeon','Ruins','Wilderness','Building','Landmark','Region','Other'];
