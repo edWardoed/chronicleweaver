@@ -175,6 +175,58 @@ export default function AdventureDashboard() {
                 )}
                 <Input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleCoverUpload} className="bg-muted border-border" />
               </div>
+              <div>
+                <label className="text-sm text-muted-foreground mb-1 block">Location Types</label>
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {(adventure.location_types ?? ['City','Town','Village','Dungeon','Ruins','Wilderness','Building','Landmark','Region','Other']).map((t) => (
+                    <Badge key={t} variant="outline" className="border-gold/40 text-gold flex items-center gap-1">
+                      {t}
+                      {t !== 'Other' && (
+                        <button
+                          onClick={() => {
+                            const current = adventure.location_types ?? ['City','Town','Village','Dungeon','Ruins','Wilderness','Building','Landmark','Region','Other'];
+                            updateAdventure.mutate({ id: adventure.id, location_types: current.filter((lt) => lt !== t) });
+                          }}
+                          className="ml-1 hover:text-destructive"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      )}
+                    </Badge>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    value={newLocationType}
+                    onChange={(e) => setNewLocationType(e.target.value)}
+                    placeholder="New type name…"
+                    className="bg-muted border-border"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && newLocationType.trim()) {
+                        const current = adventure.location_types ?? ['City','Town','Village','Dungeon','Ruins','Wilderness','Building','Landmark','Region','Other'];
+                        if (!current.includes(newLocationType.trim())) {
+                          updateAdventure.mutate({ id: adventure.id, location_types: [...current, newLocationType.trim()] });
+                        }
+                        setNewLocationType('');
+                      }
+                    }}
+                  />
+                  <Button
+                    onClick={() => {
+                      if (!newLocationType.trim()) return;
+                      const current = adventure.location_types ?? ['City','Town','Village','Dungeon','Ruins','Wilderness','Building','Landmark','Region','Other'];
+                      if (!current.includes(newLocationType.trim())) {
+                        updateAdventure.mutate({ id: adventure.id, location_types: [...current, newLocationType.trim()] });
+                      }
+                      setNewLocationType('');
+                    }}
+                    disabled={!newLocationType.trim()}
+                    className="bg-burgundy hover:bg-burgundy-light text-foreground font-heading"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
             </div>
           </TabsContent>
         )}
