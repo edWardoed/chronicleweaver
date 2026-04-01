@@ -31,6 +31,7 @@ export default function AdventureDashboard() {
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<Entry | null>(null);
+  const [newLocationType, setNewLocationType] = useState('');
 
   const handleTitleSave = () => {
     if (titleDraft.trim() && adventure) {
