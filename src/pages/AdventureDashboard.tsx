@@ -149,7 +149,7 @@ export default function AdventureDashboard() {
 
         {/* Locations Tab */}
         <TabsContent value="locations" className="flex-1 p-4 md:p-6">
-          <LocationList adventureId={adventureId!} readOnly={!canEditLocations} />
+          <LocationList adventureId={adventureId!} readOnly={!canEditLocations} locationTypes={adventure.location_types ?? undefined} />
         </TabsContent>
 
         {/* Settings Tab - DM only */}
