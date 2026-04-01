@@ -25,7 +25,8 @@ interface Props {
   locationTypes?: string[];
 }
 
-export function LocationList({ adventureId, readOnly }: Props) {
+export function LocationList({ adventureId, readOnly, locationTypes }: Props) {
+  const types = locationTypes && locationTypes.length > 0 ? locationTypes : DEFAULT_LOCATION_TYPES;
   const navigate = useNavigate();
   const { data: locations, isLoading } = useLocations(adventureId);
   const createLocation = useCreateLocation();
