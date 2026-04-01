@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Plus, Pencil, Trash2, BookOpen } from 'lucide-react';
+import { ArrowLeft, Plus, Pencil, Trash2, BookOpen, X } from 'lucide-react';
 import { DeleteEntryDialog } from '@/components/DeleteEntryDialog';
 import { EntryCard } from '@/components/EntryCard';
 import { toast } from 'sonner';
