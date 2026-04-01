@@ -17,11 +17,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Pencil, Trash2, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 
-const LOCATION_TYPES = ['City', 'Town', 'Village', 'Dungeon', 'Ruins', 'Wilderness', 'Building', 'Landmark', 'Region', 'Other'];
+const DEFAULT_LOCATION_TYPES = ['City', 'Town', 'Village', 'Dungeon', 'Ruins', 'Wilderness', 'Building', 'Landmark', 'Region', 'Other'];
 
 interface Props {
   adventureId: string;
   readOnly?: boolean;
+  locationTypes?: string[];
 }
 
 export function LocationList({ adventureId, readOnly }: Props) {
