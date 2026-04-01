@@ -1,14 +1,19 @@
 
 
-## Plan: Make Footer Bar Sticky on Character & Location Pages
+## Plan: Make Adventure Card Title Clickable
 
-Both `CharacterSheet.tsx` and `LocationEditor.tsx` use a `min-h-screen flex flex-col` layout with a scrollable content area and a `<footer>`. The footer scrolls off-screen on long forms. Fix: make the footer stick to the bottom of the viewport.
+### What Changes
+Make the entire adventure card body (image, title, description) clickable to navigate — edit dashboard for DM/scribe, read-only view for players. Keep the delete button separate.
 
 ### Changes
 
-1. **`src/pages/CharacterSheet.tsx`** (line ~586) — Add `sticky bottom-0 z-10 bg-background` to the footer element so it stays visible while the form scrolls.
+**`src/components/AdventureCard.tsx`**:
+- Wrap the image + text content area (lines 28–51) in a clickable `<button>` or `<div>` with `onClick` that calls `onEdit` for DM/scribe or `onView` for players
+- Add `cursor-pointer` styling to the clickable area
+- Remove the separate View/Edit icon buttons (lines 53–61) since the card body now handles navigation
+- Keep only the Delete button in the action column
 
-2. **`src/pages/LocationEditor.tsx`** (line ~253) — Same change: add `sticky bottom-0 z-10 bg-background` to the footer element.
-
-No other files affected.
+### Technical Details
+- Click handler: `showEditButton ? onEdit(adventure.id) : onView(adventure.id)`
+- The card body becomes the click target; delete button remains in the right column with `group-hover` visibility
 
