@@ -17,13 +17,14 @@ import { useAdventureRole } from '@/hooks/useAdventureRole';
 import { ArrowLeft, Save, Trash2, Upload, X } from 'lucide-react';
 import { toast } from 'sonner';
 
-const LOCATION_TYPES = ['City', 'Town', 'Village', 'Dungeon', 'Ruins', 'Wilderness', 'Building', 'Landmark', 'Region', 'Other'];
+const DEFAULT_LOCATION_TYPES = ['City', 'Town', 'Village', 'Dungeon', 'Ruins', 'Wilderness', 'Building', 'Landmark', 'Region', 'Other'];
 
 export default function LocationEditor() {
   const { adventureId, locationId } = useParams<{ adventureId: string; locationId: string }>();
   const navigate = useNavigate();
   const { data: location, isLoading } = useLocation(locationId);
   const { data: adventure } = useAdventure(adventureId);
+  const locationTypes = adventure?.location_types && adventure.location_types.length > 0 ? adventure.location_types : DEFAULT_LOCATION_TYPES;
   const updateLocation = useUpdateLocation();
   const deleteLocation = useDeleteLocation();
   const { canEdit } = useAdventureRole(adventureId);
@@ -187,7 +188,7 @@ export default function LocationEditor() {
                 <Select value={type} onValueChange={(v) => { setType(v); setSaveStatus('idle'); }}>
                   <SelectTrigger className="bg-muted border-border"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {LOCATION_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                    {locationTypes.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>

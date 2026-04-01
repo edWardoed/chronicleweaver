@@ -5,6 +5,7 @@ export interface Adventure {
   cover_image_url: string | null;
   created_at: string;
   updated_at: string;
+  location_types: string[] | null;
 }
 
 export interface Entry {

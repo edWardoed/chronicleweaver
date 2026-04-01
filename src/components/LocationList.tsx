@@ -17,14 +17,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Pencil, Trash2, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 
-const LOCATION_TYPES = ['City', 'Town', 'Village', 'Dungeon', 'Ruins', 'Wilderness', 'Building', 'Landmark', 'Region', 'Other'];
+const DEFAULT_LOCATION_TYPES = ['City', 'Town', 'Village', 'Dungeon', 'Ruins', 'Wilderness', 'Building', 'Landmark', 'Region', 'Other'];
 
 interface Props {
   adventureId: string;
   readOnly?: boolean;
+  locationTypes?: string[];
 }
 
-export function LocationList({ adventureId, readOnly }: Props) {
+export function LocationList({ adventureId, readOnly, locationTypes }: Props) {
+  const types = locationTypes && locationTypes.length > 0 ? locationTypes : DEFAULT_LOCATION_TYPES;
   const navigate = useNavigate();
   const { data: locations, isLoading } = useLocations(adventureId);
   const createLocation = useCreateLocation();
@@ -125,7 +127,7 @@ export function LocationList({ adventureId, readOnly }: Props) {
                 <Select value={newType} onValueChange={setNewType}>
                   <SelectTrigger className="bg-muted border-border mt-1"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {LOCATION_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                    {types.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>

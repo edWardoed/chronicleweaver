@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Plus, Pencil, Trash2, BookOpen } from 'lucide-react';
+import { ArrowLeft, Plus, Pencil, Trash2, BookOpen, X } from 'lucide-react';
 import { DeleteEntryDialog } from '@/components/DeleteEntryDialog';
 import { EntryCard } from '@/components/EntryCard';
 import { toast } from 'sonner';
@@ -31,6 +31,7 @@ export default function AdventureDashboard() {
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<Entry | null>(null);
+  const [newLocationType, setNewLocationType] = useState('');
 
   const handleTitleSave = () => {
     if (titleDraft.trim() && adventure) {
@@ -149,7 +150,7 @@ export default function AdventureDashboard() {
 
         {/* Locations Tab */}
         <TabsContent value="locations" className="flex-1 p-4 md:p-6">
-          <LocationList adventureId={adventureId!} readOnly={!canEditLocations} />
+          <LocationList adventureId={adventureId!} readOnly={!canEditLocations} locationTypes={adventure.location_types ?? undefined} />
         </TabsContent>
 
         {/* Settings Tab - DM only */}
@@ -173,6 +174,58 @@ export default function AdventureDashboard() {
                   <img src={adventure.cover_image_url} alt="Cover" className="w-full max-w-xs h-40 object-cover rounded-md mb-2" />
                 )}
                 <Input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleCoverUpload} className="bg-muted border-border" />
+              </div>
+              <div>
+                <label className="text-sm text-muted-foreground mb-1 block">Location Types</label>
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {(adventure.location_types ?? ['City','Town','Village','Dungeon','Ruins','Wilderness','Building','Landmark','Region','Other']).map((t) => (
+                    <Badge key={t} variant="outline" className="border-gold/40 text-gold flex items-center gap-1">
+                      {t}
+                      {t !== 'Other' && (
+                        <button
+                          onClick={() => {
+                            const current = adventure.location_types ?? ['City','Town','Village','Dungeon','Ruins','Wilderness','Building','Landmark','Region','Other'];
+                            updateAdventure.mutate({ id: adventure.id, location_types: current.filter((lt) => lt !== t) });
+                          }}
+                          className="ml-1 hover:text-destructive"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      )}
+                    </Badge>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    value={newLocationType}
+                    onChange={(e) => setNewLocationType(e.target.value)}
+                    placeholder="New type name…"
+                    className="bg-muted border-border"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && newLocationType.trim()) {
+                        const current = adventure.location_types ?? ['City','Town','Village','Dungeon','Ruins','Wilderness','Building','Landmark','Region','Other'];
+                        if (!current.includes(newLocationType.trim())) {
+                          updateAdventure.mutate({ id: adventure.id, location_types: [...current, newLocationType.trim()] });
+                        }
+                        setNewLocationType('');
+                      }
+                    }}
+                  />
+                  <Button
+                    onClick={() => {
+                      if (!newLocationType.trim()) return;
+                      const current = adventure.location_types ?? ['City','Town','Village','Dungeon','Ruins','Wilderness','Building','Landmark','Region','Other'];
+                      if (!current.includes(newLocationType.trim())) {
+                        updateAdventure.mutate({ id: adventure.id, location_types: [...current, newLocationType.trim()] });
+                      }
+                      setNewLocationType('');
+                    }}
+                    disabled={!newLocationType.trim()}
+                    className="bg-burgundy hover:bg-burgundy-light text-foreground font-heading"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
             </div>
           </TabsContent>
