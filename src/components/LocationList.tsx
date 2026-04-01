@@ -127,7 +127,7 @@ export function LocationList({ adventureId, readOnly, locationTypes }: Props) {
                 <Select value={newType} onValueChange={setNewType}>
                   <SelectTrigger className="bg-muted border-border mt-1"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {LOCATION_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                    {types.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
