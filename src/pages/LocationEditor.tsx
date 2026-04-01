@@ -188,7 +188,7 @@ export default function LocationEditor() {
                 <Select value={type} onValueChange={(v) => { setType(v); setSaveStatus('idle'); }}>
                   <SelectTrigger className="bg-muted border-border"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {LOCATION_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                    {locationTypes.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
