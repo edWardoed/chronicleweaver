@@ -1,6 +1,6 @@
 import type { Adventure } from '@/lib/types';
 import type { AdventureRole } from '@/hooks/useAdventureRole';
-import { Eye, Pencil, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
