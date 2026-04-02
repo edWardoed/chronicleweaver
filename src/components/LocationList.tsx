@@ -161,7 +161,7 @@ export function LocationList({ adventureId, readOnly, locationTypes }: Props) {
 
 function LocationCard({ location, onEdit, onDelete, readOnly }: { location: LocationRow; onEdit?: () => void; onDelete?: () => void; readOnly?: boolean }) {
   return (
-    <div className="bg-card border border-border rounded-lg overflow-hidden group hover:border-gold/30 transition-colors">
+    <div className="bg-card border border-border rounded-lg overflow-hidden group hover:border-gold/30 transition-colors cursor-pointer" onClick={onEdit}>
       {location.image_url ? (
         <img src={location.image_url} alt={location.name} className="w-full h-32 object-cover" />
       ) : (

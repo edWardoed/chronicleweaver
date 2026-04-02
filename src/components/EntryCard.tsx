@@ -24,7 +24,7 @@ export function EntryCard({ entry, characters, onEdit, onDelete, readOnly }: Pro
     : null;
 
   return (
-    <div className="group flex gap-4 p-4 bg-card rounded-lg border border-border hover:border-gold/40 transition-all">
+    <div className="group flex gap-4 p-4 bg-card rounded-lg border border-border hover:border-gold/40 transition-all cursor-pointer" onClick={onEdit}>
       <div className="flex-shrink-0 w-12 h-12 rounded-md bg-muted flex items-center justify-center">
         <span className="font-heading text-lg text-gold/60">
           {entry.session_number != null ? `#${entry.session_number}` : '—'}
