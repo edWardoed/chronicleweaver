@@ -57,12 +57,9 @@ export function EntryCard({ entry, characters, onEdit, onDelete, readOnly }: Pro
           </div>
         )}
       </div>
-      {!readOnly && (
+      {!readOnly && onDelete && (
         <div className="flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-          <Button variant="ghost" size="icon" onClick={onEdit} title="Edit">
-            <Pencil className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={onDelete} title="Delete">
+          <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); onDelete(); }} title="Delete">
             <Trash2 className="w-4 h-4 text-destructive" />
           </Button>
         </div>
