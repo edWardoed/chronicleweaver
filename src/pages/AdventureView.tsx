@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, BookOpen, Eye } from 'lucide-react';
 
+
 export default function AdventureView() {
   const { adventureId } = useParams<{ adventureId: string }>();
   const navigate = useNavigate();
