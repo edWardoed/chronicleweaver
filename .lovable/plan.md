@@ -1,34 +1,30 @@
 
 
-## Plan: Custom Location Types per Adventure
+## Plan: Make Entry and Location Cards Fully Clickable
 
-Allow DMs/Admins to manage a custom list of location types for each adventure via the Settings tab.
-
-### Approach
-Store custom location types as a JSON array column on the `adventures` table. The default hardcoded list serves as the initial value. DMs can add/remove types in Settings. The LocationList and LocationEditor components read from this column instead of the hardcoded array.
+Make the entire card body clickable to open the item, while keeping the delete button separate. Similar to what was done for AdventureCard.
 
 ### Changes
 
-1. **Database migration** — Add a `location_types` column to the `adventures` table:
-   ```sql
-   ALTER TABLE adventures ADD COLUMN location_types text[] 
-     DEFAULT ARRAY['City','Town','Village','Dungeon','Ruins','Wilderness','Building','Landmark','Region','Other'];
-   ```
+**`src/components/EntryCard.tsx`**:
+- Make the outer card div clickable with `cursor-pointer` and `onClick={onEdit}`
+- When `readOnly` and no `onEdit`, clicking does nothing (or could navigate to view — currently no view route for entries)
+- Remove the separate Edit (Pencil) icon button
+- Keep the Delete button, stop its click from propagating to the card
 
-2. **`src/lib/types.ts`** — Add `location_types: string[] | null` to the `Adventure` interface.
+**`src/components/LocationList.tsx` (LocationCard function)**:
+- Make the card div clickable with `cursor-pointer` and `onClick={onEdit}`
+- For read-only mode, pass an `onEdit` that navigates to the location page (view route) so players can click to view
+- Remove the separate Edit (Pencil) icon button
+- Keep the Delete button with `e.stopPropagation()`
+- In the parent `LocationList`, always pass `onEdit` for navigation (even in readOnly mode) so clicking opens the location
 
-3. **`src/pages/AdventureDashboard.tsx`** — Add a "Location Types" section in the Settings tab:
-   - Display current types as removable badges (with X button)
-   - Input field + "Add" button to add a new custom type
-   - Calls `updateAdventure.mutate()` to persist changes
-   - "Other" type cannot be removed (always kept as fallback)
-
-4. **`src/components/LocationList.tsx`** — Accept `locationTypes` prop from parent, or fetch adventure data to get custom types. Use `adventure.location_types` instead of hardcoded `LOCATION_TYPES` in the "Add Location" modal.
-
-5. **`src/pages/LocationEditor.tsx`** — Fetch adventure data (already does via `useAdventure`) and use `adventure.location_types` for the type dropdown instead of the hardcoded constant.
+**`src/pages/AdventureView.tsx`**:
+- Pass `onEdit` to `EntryCard` even in read-only mode so clicking navigates to view the entry (route: `/adventure/${adventureId}/entry/${entry.id}`)
+- Pass navigation handler to `LocationList` — already handled since LocationList manages its own navigation internally; just need to ensure readOnly locations are also clickable
 
 ### Technical Details
-- The hardcoded `LOCATION_TYPES` array becomes the default fallback when `adventure.location_types` is null (for existing adventures)
-- Both LocationList and LocationEditor already have access to `adventureId` and can use `useAdventure` to get the custom types
-- Only DM/Admin can see the Settings tab, so only they can modify types
+- `e.stopPropagation()` on delete buttons prevents card click from firing
+- Add `cursor-pointer` to card containers
+- Remove `Pencil` icon buttons from both components since the whole card replaces that function
 
