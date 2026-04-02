@@ -85,7 +85,7 @@ export function LocationList({ adventureId, readOnly, locationTypes }: Props) {
             <LocationCard
               key={loc.id}
               location={loc}
-              onEdit={readOnly ? undefined : () => navigate(`/adventure/${adventureId}/location/${loc.id}`)}
+            onEdit={() => navigate(`/adventure/${adventureId}/location/${loc.id}`)}
               onDelete={readOnly ? undefined : () => setDeleteTarget(loc)}
               readOnly={readOnly}
             />
