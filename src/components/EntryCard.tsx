@@ -1,6 +1,6 @@
 import type { Entry } from '@/lib/types';
 import type { CharacterRow } from '@/hooks/useCharacters';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useEntryCharacters } from '@/hooks/useEntryLinks';
@@ -24,7 +24,7 @@ export function EntryCard({ entry, characters, onEdit, onDelete, readOnly }: Pro
     : null;
 
   return (
-    <div className="group flex gap-4 p-4 bg-card rounded-lg border border-border hover:border-gold/40 transition-all">
+    <div className="group flex gap-4 p-4 bg-card rounded-lg border border-border hover:border-gold/40 transition-all cursor-pointer" onClick={onEdit}>
       <div className="flex-shrink-0 w-12 h-12 rounded-md bg-muted flex items-center justify-center">
         <span className="font-heading text-lg text-gold/60">
           {entry.session_number != null ? `#${entry.session_number}` : '—'}
@@ -57,12 +57,9 @@ export function EntryCard({ entry, characters, onEdit, onDelete, readOnly }: Pro
           </div>
         )}
       </div>
-      {!readOnly && (
+      {!readOnly && onDelete && (
         <div className="flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-          <Button variant="ghost" size="icon" onClick={onEdit} title="Edit">
-            <Pencil className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={onDelete} title="Delete">
+          <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); onDelete(); }} title="Delete">
             <Trash2 className="w-4 h-4 text-destructive" />
           </Button>
         </div>

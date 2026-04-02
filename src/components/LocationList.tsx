@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Pencil, Trash2, MapPin } from 'lucide-react';
+import { Plus, Trash2, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 
 const DEFAULT_LOCATION_TYPES = ['City', 'Town', 'Village', 'Dungeon', 'Ruins', 'Wilderness', 'Building', 'Landmark', 'Region', 'Other'];
@@ -85,7 +85,7 @@ export function LocationList({ adventureId, readOnly, locationTypes }: Props) {
             <LocationCard
               key={loc.id}
               location={loc}
-              onEdit={readOnly ? undefined : () => navigate(`/adventure/${adventureId}/location/${loc.id}`)}
+            onEdit={() => navigate(`/adventure/${adventureId}/location/${loc.id}`)}
               onDelete={readOnly ? undefined : () => setDeleteTarget(loc)}
               readOnly={readOnly}
             />
@@ -161,7 +161,7 @@ export function LocationList({ adventureId, readOnly, locationTypes }: Props) {
 
 function LocationCard({ location, onEdit, onDelete, readOnly }: { location: LocationRow; onEdit?: () => void; onDelete?: () => void; readOnly?: boolean }) {
   return (
-    <div className="bg-card border border-border rounded-lg overflow-hidden group hover:border-gold/30 transition-colors">
+    <div className="bg-card border border-border rounded-lg overflow-hidden group hover:border-gold/30 transition-colors cursor-pointer" onClick={onEdit}>
       {location.image_url ? (
         <img src={location.image_url} alt={location.name} className="w-full h-32 object-cover" />
       ) : (
@@ -177,10 +177,9 @@ function LocationCard({ location, onEdit, onDelete, readOnly }: { location: Loca
               <Badge variant="outline" className="border-gold/40 text-gold text-xs mt-1">{location.type}</Badge>
             )}
           </div>
-          {!readOnly && (
+          {!readOnly && onDelete && (
             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onEdit}><Pencil className="w-3.5 h-3.5" /></Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={onDelete}><Trash2 className="w-3.5 h-3.5" /></Button>
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={(e) => { e.stopPropagation(); onDelete(); }}><Trash2 className="w-3.5 h-3.5" /></Button>
             </div>
           )}
         </div>

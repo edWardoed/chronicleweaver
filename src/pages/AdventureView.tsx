@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, BookOpen, Eye } from 'lucide-react';
 
+
 export default function AdventureView() {
   const { adventureId } = useParams<{ adventureId: string }>();
   const navigate = useNavigate();
@@ -58,6 +59,7 @@ export default function AdventureView() {
                     key={entry.id}
                     entry={entry}
                     characters={characters ?? []}
+                    onEdit={() => navigate(`/adventure/${adventureId}/entry/${entry.id}`)}
                     readOnly
                   />
                 ))}
