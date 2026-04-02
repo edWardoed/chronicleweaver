@@ -1,6 +1,6 @@
 import type { Entry } from '@/lib/types';
 import type { CharacterRow } from '@/hooks/useCharacters';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useEntryCharacters } from '@/hooks/useEntryLinks';

@@ -59,6 +59,7 @@ export default function AdventureView() {
                     key={entry.id}
                     entry={entry}
                     characters={characters ?? []}
+                    onEdit={() => navigate(`/adventure/${adventureId}/entry/${entry.id}`)}
                     readOnly
                   />
                 ))}

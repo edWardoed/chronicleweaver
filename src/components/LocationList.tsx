@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Pencil, Trash2, MapPin } from 'lucide-react';
+import { Plus, Trash2, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 
 const DEFAULT_LOCATION_TYPES = ['City', 'Town', 'Village', 'Dungeon', 'Ruins', 'Wilderness', 'Building', 'Landmark', 'Region', 'Other'];
