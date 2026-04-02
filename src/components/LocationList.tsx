@@ -177,10 +177,9 @@ function LocationCard({ location, onEdit, onDelete, readOnly }: { location: Loca
               <Badge variant="outline" className="border-gold/40 text-gold text-xs mt-1">{location.type}</Badge>
             )}
           </div>
-          {!readOnly && (
+          {!readOnly && onDelete && (
             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onEdit}><Pencil className="w-3.5 h-3.5" /></Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={onDelete}><Trash2 className="w-3.5 h-3.5" /></Button>
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={(e) => { e.stopPropagation(); onDelete(); }}><Trash2 className="w-3.5 h-3.5" /></Button>
             </div>
           )}
         </div>
