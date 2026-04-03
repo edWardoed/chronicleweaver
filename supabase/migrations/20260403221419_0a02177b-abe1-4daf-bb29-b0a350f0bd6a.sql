@@ -1,0 +1,1 @@
+DROP POLICY "Players and scribes can select adventure characters" ON public.characters;
