@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAdventure, useUpdateAdventure } from '@/hooks/useAdventure';
 import { useEntries, useDeleteEntry } from '@/hooks/useEntries';
 import { useCharacters } from '@/hooks/useCharacters';
@@ -26,6 +26,7 @@ export default function AdventureDashboard() {
   const { data: characters } = useCharacters(adventureId!);
   const updateAdventure = useUpdateAdventure();
   const deleteEntry = useDeleteEntry();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { canEdit, canEditEntries, canEditLocations, canEditCharacters, canDelete } = useAdventureRole(adventureId);
 
   const [editingTitle, setEditingTitle] = useState(false);
@@ -83,7 +84,7 @@ export default function AdventureDashboard() {
       </header>
 
       {/* Tabs */}
-      <Tabs defaultValue="entries" className="flex-1 flex flex-col">
+      <Tabs defaultValue={searchParams.get('tab') || 'entries'} onValueChange={(v) => setSearchParams({ tab: v }, { replace: true })} className="flex-1 flex flex-col">
         <div className="border-b border-border px-4">
           <TabsList className="bg-transparent h-auto gap-0">
             <TabsTrigger value="entries" className="font-heading data-[state=active]:text-gold data-[state=active]:border-b-2 data-[state=active]:border-gold rounded-none bg-transparent">Entries</TabsTrigger>

@@ -211,7 +211,7 @@ export default function CharacterSheet() {
               <BreadcrumbSeparator />
               <BreadcrumbItem><BreadcrumbLink href={`/adventure/${adventureId}`}>{adventure?.title ?? '…'}</BreadcrumbLink></BreadcrumbItem>
               <BreadcrumbSeparator />
-              <BreadcrumbItem><BreadcrumbLink href={`/adventure/${adventureId}`}>Characters</BreadcrumbLink></BreadcrumbItem>
+              <BreadcrumbItem><BreadcrumbLink href={`/adventure/${adventureId}?tab=characters`}>Characters</BreadcrumbLink></BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem><BreadcrumbPage>{form.name || 'Character'}</BreadcrumbPage></BreadcrumbItem>
             </BreadcrumbList>
