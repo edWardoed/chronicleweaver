@@ -157,7 +157,7 @@ export default function LocationEditor() {
               <BreadcrumbSeparator />
               <BreadcrumbItem><BreadcrumbLink href={`/adventure/${adventureId}`}>{adventure?.title ?? '…'}</BreadcrumbLink></BreadcrumbItem>
               <BreadcrumbSeparator />
-              <BreadcrumbItem><BreadcrumbLink href={`/adventure/${adventureId}`}>Locations</BreadcrumbLink></BreadcrumbItem>
+              <BreadcrumbItem><BreadcrumbLink href={`/adventure/${adventureId}?tab=locations`}>Locations</BreadcrumbLink></BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem><BreadcrumbPage>{name || 'Location'}</BreadcrumbPage></BreadcrumbItem>
             </BreadcrumbList>
