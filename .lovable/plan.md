@@ -1,30 +1,34 @@
 
 
-## Plan: Make Entry and Location Cards Fully Clickable
+## Plan: Fix Breadcrumb Navigation to Correct Tab
 
-Make the entire card body clickable to open the item, while keeping the delete button separate. Similar to what was done for AdventureCard.
+### Problem
+The "Characters" and "Locations" breadcrumb links in CharacterSheet, NPCSheet, and LocationEditor all navigate to `/adventure/${adventureId}`, which always opens the default "entries" tab.
+
+### Solution
+Use a `tab` query parameter to control the active tab in AdventureDashboard, and update breadcrumb links to include it.
 
 ### Changes
 
-**`src/components/EntryCard.tsx`**:
-- Make the outer card div clickable with `cursor-pointer` and `onClick={onEdit}`
-- When `readOnly` and no `onEdit`, clicking does nothing (or could navigate to view — currently no view route for entries)
-- Remove the separate Edit (Pencil) icon button
-- Keep the Delete button, stop its click from propagating to the card
+**`src/pages/AdventureDashboard.tsx`**:
+- Read `tab` from URL search params (`useSearchParams`)
+- Use it as the `defaultValue` for `Tabs` (fallback to `"entries"`)
+- Optionally sync tab changes back to the URL with `onValueChange`
 
-**`src/components/LocationList.tsx` (LocationCard function)**:
-- Make the card div clickable with `cursor-pointer` and `onClick={onEdit}`
-- For read-only mode, pass an `onEdit` that navigates to the location page (view route) so players can click to view
-- Remove the separate Edit (Pencil) icon button
-- Keep the Delete button with `e.stopPropagation()`
-- In the parent `LocationList`, always pass `onEdit` for navigation (even in readOnly mode) so clicking opens the location
+**`src/pages/CharacterSheet.tsx`**:
+- Change "Characters" breadcrumb href from `/adventure/${adventureId}` to `/adventure/${adventureId}?tab=characters`
 
-**`src/pages/AdventureView.tsx`**:
-- Pass `onEdit` to `EntryCard` even in read-only mode so clicking navigates to view the entry (route: `/adventure/${adventureId}/entry/${entry.id}`)
-- Pass navigation handler to `LocationList` — already handled since LocationList manages its own navigation internally; just need to ensure readOnly locations are also clickable
+**`src/pages/NPCSheet.tsx`**:
+- Change "Characters" breadcrumb href from `/adventure/${adventureId}` to `/adventure/${adventureId}?tab=characters`
+
+**`src/pages/LocationEditor.tsx`**:
+- Change "Locations" breadcrumb href from `/adventure/${adventureId}` to `/adventure/${adventureId}?tab=locations`
+
+**`src/pages/AdventureView.tsx`** (if it has similar breadcrumb/tab issues):
+- Apply the same `tab` query param pattern for consistency
 
 ### Technical Details
-- `e.stopPropagation()` on delete buttons prevents card click from firing
-- Add `cursor-pointer` to card containers
-- Remove `Pencil` icon buttons from both components since the whole card replaces that function
+- `useSearchParams` from react-router-dom reads the `?tab=` param
+- `<Tabs defaultValue={searchParams.get('tab') || 'entries'}>` sets the initial tab
+- Breadcrumb links use standard `<a href>` so the query param will work naturally
 
