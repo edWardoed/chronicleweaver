@@ -26,6 +26,7 @@ export default function AdventureDashboard() {
   const { data: characters } = useCharacters(adventureId!);
   const updateAdventure = useUpdateAdventure();
   const deleteEntry = useDeleteEntry();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { canEdit, canEditEntries, canEditLocations, canEditCharacters, canDelete } = useAdventureRole(adventureId);
 
   const [editingTitle, setEditingTitle] = useState(false);
