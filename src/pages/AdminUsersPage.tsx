@@ -11,7 +11,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Plus, Users, Shield, User, Loader2, BookOpen, X } from 'lucide-react';
+import { ArrowLeft, Plus, Users, Shield, User, Loader2, BookOpen } from 'lucide-react';
+import { AdminUserActions } from '@/components/AdminUserActions';
 import { toast } from 'sonner';
 
 interface UserWithRole {
@@ -34,7 +35,7 @@ const ADVENTURE_ROLES = [
 
 export default function AdminUsersPage() {
   const navigate = useNavigate();
-  const { isAdmin, signUp } = useAuthContext();
+  const { isAdmin, signUp, user: currentUser } = useAuthContext();
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [accessOpen, setAccessOpen] = useState<UserWithRole | null>(null);
@@ -186,6 +187,14 @@ export default function AdminUsersPage() {
                   <Badge variant={u.role === 'admin' ? 'default' : 'secondary'} className={u.role === 'admin' ? 'bg-gold text-background' : ''}>
                     {u.role}
                   </Badge>
+                  <AdminUserActions
+                    userId={u.id}
+                    email={u.email}
+                    displayName={u.display_name}
+                    isCurrentUser={u.id === currentUser?.id}
+                    isTargetAdmin={u.role === 'admin'}
+                    onDeleted={() => queryClient.invalidateQueries({ queryKey: ['admin-users'] })}
+                  />
                 </CardContent>
               </Card>
             ))}
