@@ -187,6 +187,14 @@ export default function AdminUsersPage() {
                   <Badge variant={u.role === 'admin' ? 'default' : 'secondary'} className={u.role === 'admin' ? 'bg-gold text-background' : ''}>
                     {u.role}
                   </Badge>
+                  <AdminUserActions
+                    userId={u.id}
+                    email={u.email}
+                    displayName={u.display_name}
+                    isCurrentUser={u.id === currentUser?.id}
+                    isTargetAdmin={u.role === 'admin'}
+                    onDeleted={() => queryClient.invalidateQueries({ queryKey: ['admin-users'] })}
+                  />
                 </CardContent>
               </Card>
             ))}
