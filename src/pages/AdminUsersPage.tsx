@@ -11,7 +11,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Plus, Users, Shield, User, Loader2, BookOpen, X } from 'lucide-react';
+import { ArrowLeft, Plus, Users, Shield, User, Loader2, BookOpen } from 'lucide-react';
+import { AdminUserActions } from '@/components/AdminUserActions';
 import { toast } from 'sonner';
 
 interface UserWithRole {
