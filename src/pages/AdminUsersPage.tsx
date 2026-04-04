@@ -35,7 +35,7 @@ const ADVENTURE_ROLES = [
 
 export default function AdminUsersPage() {
   const navigate = useNavigate();
-  const { isAdmin, signUp } = useAuthContext();
+  const { isAdmin, signUp, user: currentUser } = useAuthContext();
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [accessOpen, setAccessOpen] = useState<UserWithRole | null>(null);
