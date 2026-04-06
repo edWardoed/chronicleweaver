@@ -1,34 +1,36 @@
 
 
-## Plan: Fix Breadcrumb Navigation to Correct Tab
+## Fix Date Field Display in Entry Editor
 
 ### Problem
-The "Characters" and "Locations" breadcrumb links in CharacterSheet, NPCSheet, and LocationEditor all navigate to `/adventure/${adventureId}`, which always opens the default "entries" tab.
-
-### Solution
-Use a `tab` query parameter to control the active tab in AdventureDashboard, and update breadcrumb links to include it.
+When a date is selected in the "Real World" date picker (right sidebar), the calendar icon stays visible, and the formatted date text can overflow the button.
 
 ### Changes
 
-**`src/pages/AdventureDashboard.tsx`**:
-- Read `tab` from URL search params (`useSearchParams`)
-- Use it as the `defaultValue` for `Tabs` (fallback to `"entries"`)
-- Optionally sync tab changes back to the URL with `onValueChange`
+**`src/pages/EntryEditor.tsx`** (lines 288-298):
+- Remove the `CalendarIcon` when `realWorldDate` is set (only show it for the placeholder state)
+- Add `truncate` and `overflow-hidden` classes to the button so text stays within bounds
+- Use a shorter date format (e.g. `"PP"` instead of `"PPP"`) to reduce text length in the narrow 180px sidebar
 
-**`src/pages/CharacterSheet.tsx`**:
-- Change "Characters" breadcrumb href from `/adventure/${adventureId}` to `/adventure/${adventureId}?tab=characters`
+Updated button:
+```tsx
+<Button
+  variant="outline"
+  className={cn(
+    "w-full justify-start text-left font-normal h-8 text-xs bg-muted border-border mb-4 overflow-hidden",
+    !realWorldDate && "text-muted-foreground"
+  )}
+>
+  {realWorldDate ? (
+    <span className="truncate">{format(realWorldDate, "PP")}</span>
+  ) : (
+    <>
+      <CalendarIcon className="mr-2 h-3 w-3 shrink-0" />
+      <span>Pick a date</span>
+    </>
+  )}
+</Button>
+```
 
-**`src/pages/NPCSheet.tsx`**:
-- Change "Characters" breadcrumb href from `/adventure/${adventureId}` to `/adventure/${adventureId}?tab=characters`
-
-**`src/pages/LocationEditor.tsx`**:
-- Change "Locations" breadcrumb href from `/adventure/${adventureId}` to `/adventure/${adventureId}?tab=locations`
-
-**`src/pages/AdventureView.tsx`** (if it has similar breadcrumb/tab issues):
-- Apply the same `tab` query param pattern for consistency
-
-### Technical Details
-- `useSearchParams` from react-router-dom reads the `?tab=` param
-- `<Tabs defaultValue={searchParams.get('tab') || 'entries'}>` sets the initial tab
-- Breadcrumb links use standard `<a href>` so the query param will work naturally
+Single file, ~10 lines changed.
 
