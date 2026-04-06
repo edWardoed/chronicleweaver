@@ -1,36 +1,35 @@
 
 
-## Fix Date Field Display in Entry Editor
+## Replace Character & Location Search with Searchable Dropdown Popover
 
 ### Problem
-When a date is selected in the "Real World" date picker (right sidebar), the calendar icon stays visible, and the formatted date text can overflow the button.
+The current character and location pickers in the entry sidebar use a plain text input that shows a results list only while typing. This is not a standard dropdown pattern and requires users to know what to search for.
 
 ### Changes
 
-**`src/pages/EntryEditor.tsx`** (lines 288-298):
-- Remove the `CalendarIcon` when `realWorldDate` is set (only show it for the placeholder state)
-- Add `truncate` and `overflow-hidden` classes to the button so text stays within bounds
-- Use a shorter date format (e.g. `"PP"` instead of `"PPP"`) to reduce text length in the narrow 180px sidebar
+**`src/pages/EntryEditor.tsx`** — Replace both the character and location "Add" sections (lines 200-225 and 253-278) with a `Popover`-based searchable dropdown:
 
-Updated button:
-```tsx
-<Button
-  variant="outline"
-  className={cn(
-    "w-full justify-start text-left font-normal h-8 text-xs bg-muted border-border mb-4 overflow-hidden",
-    !realWorldDate && "text-muted-foreground"
-  )}
->
-  {realWorldDate ? (
-    <span className="truncate">{format(realWorldDate, "PP")}</span>
-  ) : (
-    <>
-      <CalendarIcon className="mr-2 h-3 w-3 shrink-0" />
-      <span>Pick a date</span>
-    </>
-  )}
-</Button>
+- Replace the `<Input>` + conditional results div with a `Popover` containing:
+  - A trigger `Button` styled like the existing input ("Add character…" / "Add location…")
+  - Inside the popover: a search `Input` at top, then a scrollable list of unlinked items filtered by the search term
+  - Clicking an item links it and closes the popover
+- Remove `charSearch` and `locSearch` state variables (replace with local state inside each popover or keep and reset on close)
+- Show all available (unlinked) items when the popover opens with no search text, so users can browse the full list
+- Keep the existing linked chips display and the X-to-unlink behavior unchanged
+
+### UI Pattern
+```text
+┌─────────────────────┐
+│ + Add character… ▾  │  ← Button trigger
+└─────────────────────┘
+┌─────────────────────┐
+│ 🔍 Search…          │  ← Input inside popover
+├─────────────────────┤
+│ Aragorn (PC)        │  ← Filtered results
+│ Gandalf (NPC)       │
+│ Legolas (PC)        │
+└─────────────────────┘
 ```
 
-Single file, ~10 lines changed.
+Single file change, ~60 lines modified.
 
