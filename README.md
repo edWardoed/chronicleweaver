@@ -1,3 +1,3 @@
-# Welcome to your Lovable project
+# Chronicle Weaver made in lovable
 
-TODO: Document your project here
+This is a project to create a DnD campaign tracking web app.
