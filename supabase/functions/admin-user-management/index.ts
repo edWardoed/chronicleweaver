@@ -58,6 +58,7 @@ Deno.serve(async (req) => {
       const { error } = await adminClient.auth.admin.generateLink({
         type: "signup",
         email: email,
+        password: crypto.randomUUID(),
       });
       if (error) throw error;
       return new Response(JSON.stringify({ success: true }), {
@@ -99,7 +100,7 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
+    return new Response(JSON.stringify({ error: (err as Error).message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
