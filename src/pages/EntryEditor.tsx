@@ -198,30 +198,36 @@ export default function EntryEditor() {
           </div>
         ))}
         {realEntryId && (
-          <div className="mt-2">
-            <div className="relative">
-              <Search className="w-3 h-3 absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Popover onOpenChange={() => setCharSearch('')}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="w-full justify-start text-left font-normal h-7 text-xs bg-muted border-border mt-2">
+                <Search className="w-3 h-3 mr-2 shrink-0 text-muted-foreground" />
+                <span className="text-muted-foreground">Add character…</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-56 p-2" align="start">
               <Input
-                placeholder="Add character…"
+                placeholder="Search…"
                 value={charSearch}
                 onChange={(e) => setCharSearch(e.target.value)}
-                className="h-7 text-xs pl-7 bg-muted border-border"
+                className="h-7 text-xs mb-2"
+                autoFocus
               />
-            </div>
-            {charSearch && filteredChars.length > 0 && (
-              <div className="mt-1 bg-popover border border-border rounded-md max-h-32 overflow-y-auto">
-                {filteredChars.map((c) => (
+              <div className="max-h-40 overflow-y-auto">
+                {filteredChars.length > 0 ? filteredChars.map((c) => (
                   <button
                     key={c.id}
-                    className="w-full text-left px-2 py-1 text-xs hover:bg-accent text-foreground"
+                    className="w-full text-left px-2 py-1.5 text-xs hover:bg-accent rounded-sm text-foreground"
                     onClick={() => { linkChar.mutate({ entryId: realEntryId, characterId: c.id }); setCharSearch(''); }}
                   >
                     {c.name} <span className="text-muted-foreground">({c.type})</span>
                   </button>
-                ))}
+                )) : (
+                  <p className="text-xs text-muted-foreground text-center py-2">No characters found</p>
+                )}
               </div>
-            )}
-          </div>
+            </PopoverContent>
+          </Popover>
         )}
       </div>
 
@@ -251,30 +257,36 @@ export default function EntryEditor() {
           </div>
         ))}
         {realEntryId && (
-          <div className="mt-2">
-            <div className="relative">
-              <Search className="w-3 h-3 absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Popover onOpenChange={() => setLocSearch('')}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="w-full justify-start text-left font-normal h-7 text-xs bg-muted border-border mt-2">
+                <Search className="w-3 h-3 mr-2 shrink-0 text-muted-foreground" />
+                <span className="text-muted-foreground">Add location…</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-56 p-2" align="start">
               <Input
-                placeholder="Add location…"
+                placeholder="Search…"
                 value={locSearch}
                 onChange={(e) => setLocSearch(e.target.value)}
-                className="h-7 text-xs pl-7 bg-muted border-border"
+                className="h-7 text-xs mb-2"
+                autoFocus
               />
-            </div>
-            {locSearch && filteredLocs.length > 0 && (
-              <div className="mt-1 bg-popover border border-border rounded-md max-h-32 overflow-y-auto">
-                {filteredLocs.map((l) => (
+              <div className="max-h-40 overflow-y-auto">
+                {filteredLocs.length > 0 ? filteredLocs.map((l) => (
                   <button
                     key={l.id}
-                    className="w-full text-left px-2 py-1 text-xs hover:bg-accent text-foreground"
+                    className="w-full text-left px-2 py-1.5 text-xs hover:bg-accent rounded-sm text-foreground"
                     onClick={() => { linkLoc.mutate({ entryId: realEntryId, locationId: l.id }); setLocSearch(''); }}
                   >
-                    {l.name}
+                    {l.name} {l.type && <span className="text-muted-foreground">({l.type})</span>}
                   </button>
-                ))}
+                )) : (
+                  <p className="text-xs text-muted-foreground text-center py-2">No locations found</p>
+                )}
               </div>
-            )}
-          </div>
+            </PopoverContent>
+          </Popover>
         )}
       </div>
     </>
