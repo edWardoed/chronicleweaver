@@ -289,12 +289,18 @@ export default function EntryEditor() {
           <Button
             variant="outline"
             className={cn(
-              "w-full justify-start text-left font-normal h-8 text-xs bg-muted border-border mb-4",
+              "w-full justify-start text-left font-normal h-8 text-xs bg-muted border-border mb-4 overflow-hidden",
               !realWorldDate && "text-muted-foreground"
             )}
           >
-            <CalendarIcon className="mr-2 h-3 w-3" />
-            {realWorldDate ? format(realWorldDate, "PPP") : "Pick a date"}
+            {realWorldDate ? (
+              <span className="truncate">{format(realWorldDate, "PP")}</span>
+            ) : (
+              <>
+                <CalendarIcon className="mr-2 h-3 w-3 shrink-0" />
+                <span>Pick a date</span>
+              </>
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
