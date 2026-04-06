@@ -58,6 +58,7 @@ Deno.serve(async (req) => {
       const { error } = await adminClient.auth.admin.generateLink({
         type: "signup",
         email: email,
+        password: crypto.randomUUID(),
       });
       if (error) throw error;
       return new Response(JSON.stringify({ success: true }), {
