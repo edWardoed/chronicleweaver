@@ -85,6 +85,19 @@ export function CreateAdventureModal({ open, onOpenChange }: Props) {
             {errors.title && <p className="text-destructive text-sm mt-1">{errors.title.message}</p>}
           </div>
           <div>
+            <Label className="text-foreground">Game System *</Label>
+            <Select defaultValue="D&D 5E" onValueChange={(val) => setValue('game_system', val)}>
+              <SelectTrigger className="bg-muted border-border text-foreground">
+                <SelectValue placeholder="Select a game system" />
+              </SelectTrigger>
+              <SelectContent>
+                {GAME_SYSTEMS.map((gs) => (
+                  <SelectItem key={gs} value={gs}>{gs}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
             <Label className="text-foreground">Description</Label>
             <Textarea {...register('description')} className="bg-muted border-border text-foreground resize-none" rows={3} placeholder="A tale of danger and discovery..." />
           </div>
