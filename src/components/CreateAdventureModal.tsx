@@ -32,8 +32,9 @@ export function CreateAdventureModal({ open, onOpenChange }: Props) {
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const createAdventure = useCreateAdventure();
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>({
+  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
+    defaultValues: { game_system: 'D&D 5E' },
   });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
