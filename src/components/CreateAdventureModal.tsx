@@ -62,6 +62,7 @@ export function CreateAdventureModal({ open, onOpenChange }: Props) {
         title: data.title,
         description: data.description,
         cover_image_url,
+        game_system: data.game_system,
       });
       toast.success('Adventure created!');
       reset();
