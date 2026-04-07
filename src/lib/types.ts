@@ -6,6 +6,7 @@ export interface Adventure {
   created_at: string;
   updated_at: string;
   location_types: string[] | null;
+  game_system: string;
 }
 
 export interface Entry {
