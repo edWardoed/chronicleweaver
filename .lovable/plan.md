@@ -1,35 +1,29 @@
 
 
-## Replace Character & Location Search with Searchable Dropdown Popover
+## Add "Game System" Field to Adventure Creation
 
-### Problem
-The current character and location pickers in the entry sidebar use a plain text input that shows a results list only while typing. This is not a standard dropdown pattern and requires users to know what to search for.
+### Summary
+Add a "Game System" dropdown to the Create Adventure modal. For now the only option is "D&D 5E", which will be pre-selected as the default. The value will be stored in a new `game_system` column on the `adventures` table.
 
 ### Changes
 
-**`src/pages/EntryEditor.tsx`** — Replace both the character and location "Add" sections (lines 200-225 and 253-278) with a `Popover`-based searchable dropdown:
-
-- Replace the `<Input>` + conditional results div with a `Popover` containing:
-  - A trigger `Button` styled like the existing input ("Add character…" / "Add location…")
-  - Inside the popover: a search `Input` at top, then a scrollable list of unlinked items filtered by the search term
-  - Clicking an item links it and closes the popover
-- Remove `charSearch` and `locSearch` state variables (replace with local state inside each popover or keep and reset on close)
-- Show all available (unlinked) items when the popover opens with no search text, so users can browse the full list
-- Keep the existing linked chips display and the X-to-unlink behavior unchanged
-
-### UI Pattern
-```text
-┌─────────────────────┐
-│ + Add character… ▾  │  ← Button trigger
-└─────────────────────┘
-┌─────────────────────┐
-│ 🔍 Search…          │  ← Input inside popover
-├─────────────────────┤
-│ Aragorn (PC)        │  ← Filtered results
-│ Gandalf (NPC)       │
-│ Legolas (PC)        │
-└─────────────────────┘
+**1. Database migration** — Add `game_system` column to `adventures`:
+```sql
+ALTER TABLE public.adventures
+  ADD COLUMN game_system text NOT NULL DEFAULT 'D&D 5E';
 ```
+This backfills all existing adventures with "D&D 5E".
 
-Single file change, ~60 lines modified.
+**2. `src/lib/types.ts`** — Add `game_system: string` to the `Adventure` interface.
+
+**3. `src/components/CreateAdventureModal.tsx`**:
+- Add a `game_system` field to the Zod schema with a default of `'D&D 5E'`
+- Add a `Select` dropdown between Title and Description with "D&D 5E" as the single option
+- Pass `game_system` through to the `createAdventure` mutation
+
+**4. `src/hooks/useAdventures.ts`** — Add `game_system` to the `useCreateAdventure` mutation input type.
+
+**5. `src/hooks/useAdventure.ts`** — No changes needed (already uses `select('*')`).
+
+Single column addition, ~15 lines of UI code added.
 
