@@ -19,7 +19,7 @@ export function useAdventures() {
 export function useCreateAdventure() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (adventure: { title: string; description?: string; cover_image_url?: string }) => {
+    mutationFn: async (adventure: { title: string; description?: string; cover_image_url?: string; game_system?: string }) => {
       const { data, error } = await supabase
         .from('adventures')
         .insert(adventure)

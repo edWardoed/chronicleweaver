@@ -1,0 +1,1 @@
+ALTER TABLE public.adventures ADD COLUMN game_system text NOT NULL DEFAULT 'D&D 5E';

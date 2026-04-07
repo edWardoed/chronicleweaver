@@ -7,13 +7,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCreateAdventure, uploadCoverImage } from '@/hooks/useAdventures';
 import { Upload, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
+const GAME_SYSTEMS = ['D&D 5E'] as const;
+
 const schema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
+  game_system: z.string().default('D&D 5E'),
 });
 
 type FormData = z.infer<typeof schema>;

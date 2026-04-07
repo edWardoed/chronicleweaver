@@ -51,6 +51,7 @@ export type Database = {
           cover_image_url: string | null
           created_at: string
           description: string | null
+          game_system: string
           id: string
           location_types: string[] | null
           title: string
@@ -60,6 +61,7 @@ export type Database = {
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
+          game_system?: string
           id?: string
           location_types?: string[] | null
           title: string
@@ -69,6 +71,7 @@ export type Database = {
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
+          game_system?: string
           id?: string
           location_types?: string[] | null
           title?: string
