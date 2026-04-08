@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useCharacter } from "@/hooks/useCharacters";
+import { useAdventure } from "@/hooks/useAdventure";
 import Index from "./pages/Index.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage.tsx";
@@ -16,17 +17,22 @@ import AdventureView from "./pages/AdventureView.tsx";
 import EntryEditor from "./pages/EntryEditor.tsx";
 import CharacterSheet from "./pages/CharacterSheet.tsx";
 import NPCSheet from "./pages/NPCSheet.tsx";
+import SWCharacterSheet from "./pages/SWCharacterSheet.tsx";
+import SWNPCSheet from "./pages/SWNPCSheet.tsx";
 import LocationEditor from "./pages/LocationEditor.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
 
 function CharacterSheetRouter() {
-  const { characterId } = useParams<{ characterId: string }>();
-  const { data: character, isLoading } = useCharacter(characterId);
-  if (isLoading) return <div className="min-h-screen bg-background p-8 text-foreground">Loading…</div>;
+  const { adventureId, characterId } = useParams<{ adventureId: string; characterId: string }>();
+  const { data: character, isLoading: charLoading } = useCharacter(characterId);
+  const { data: adventure, isLoading: advLoading } = useAdventure(adventureId);
+  if (charLoading || advLoading) return <div className="min-h-screen bg-background p-8 text-foreground">Loading…</div>;
   if (!character) return <div className="min-h-screen bg-background p-8 text-foreground">Character not found</div>;
-  return character.type === 'NPC' ? <NPCSheet /> : <CharacterSheet />;
+  const isSW = adventure?.game_system === 'Savage Worlds';
+  if (character.type === 'NPC') return isSW ? <SWNPCSheet /> : <NPCSheet />;
+  return isSW ? <SWCharacterSheet /> : <CharacterSheet />;
 }
 
 const App = () => (

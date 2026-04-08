@@ -12,7 +12,7 @@ import { useCreateAdventure, uploadCoverImage } from '@/hooks/useAdventures';
 import { Upload, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
-const GAME_SYSTEMS = ['D&D 5E'] as const;
+const GAME_SYSTEMS = ['D&D 5E', 'Savage Worlds'] as const;
 
 const schema = z.object({
   title: z.string().min(1, 'Title is required'),

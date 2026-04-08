@@ -53,6 +53,15 @@ export interface CharacterRow {
   story_role: string | null;
   dm_notes_visible: boolean;
   created_by: string | null;
+  sw_attributes: Record<string, string> | null;
+  sw_skills: { name: string; die: string }[] | null;
+  sw_pace: number | null;
+  sw_parry: number | null;
+  sw_toughness: number | null;
+  sw_wounds: number | null;
+  sw_fatigue: number | null;
+  sw_bennies: number | null;
+  sw_rank: string | null;
 }
 
 export interface EquipmentItem {
