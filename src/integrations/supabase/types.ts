@@ -126,6 +126,15 @@ export type Database = {
           story_role: string | null
           str_score: number | null
           subclass: string | null
+          sw_attributes: Json | null
+          sw_bennies: number | null
+          sw_fatigue: number | null
+          sw_pace: number | null
+          sw_parry: number | null
+          sw_rank: string | null
+          sw_skills: Json | null
+          sw_toughness: number | null
+          sw_wounds: number | null
           temp_hp: number | null
           type: string | null
           updated_at: string
@@ -178,6 +187,15 @@ export type Database = {
           story_role?: string | null
           str_score?: number | null
           subclass?: string | null
+          sw_attributes?: Json | null
+          sw_bennies?: number | null
+          sw_fatigue?: number | null
+          sw_pace?: number | null
+          sw_parry?: number | null
+          sw_rank?: string | null
+          sw_skills?: Json | null
+          sw_toughness?: number | null
+          sw_wounds?: number | null
           temp_hp?: number | null
           type?: string | null
           updated_at?: string
@@ -230,6 +248,15 @@ export type Database = {
           story_role?: string | null
           str_score?: number | null
           subclass?: string | null
+          sw_attributes?: Json | null
+          sw_bennies?: number | null
+          sw_fatigue?: number | null
+          sw_pace?: number | null
+          sw_parry?: number | null
+          sw_rank?: string | null
+          sw_skills?: Json | null
+          sw_toughness?: number | null
+          sw_wounds?: number | null
           temp_hp?: number | null
           type?: string | null
           updated_at?: string
@@ -514,6 +541,15 @@ export type Database = {
           story_role: string | null
           str_score: number | null
           subclass: string | null
+          sw_attributes: Json | null
+          sw_bennies: number | null
+          sw_fatigue: number | null
+          sw_pace: number | null
+          sw_parry: number | null
+          sw_rank: string | null
+          sw_skills: Json | null
+          sw_toughness: number | null
+          sw_wounds: number | null
           temp_hp: number | null
           type: string | null
           updated_at: string | null
@@ -566,6 +602,15 @@ export type Database = {
           story_role?: string | null
           str_score?: number | null
           subclass?: string | null
+          sw_attributes?: Json | null
+          sw_bennies?: number | null
+          sw_fatigue?: number | null
+          sw_pace?: number | null
+          sw_parry?: number | null
+          sw_rank?: string | null
+          sw_skills?: Json | null
+          sw_toughness?: number | null
+          sw_wounds?: number | null
           temp_hp?: number | null
           type?: string | null
           updated_at?: string | null
@@ -618,6 +663,15 @@ export type Database = {
           story_role?: string | null
           str_score?: number | null
           subclass?: string | null
+          sw_attributes?: Json | null
+          sw_bennies?: number | null
+          sw_fatigue?: number | null
+          sw_pace?: number | null
+          sw_parry?: number | null
+          sw_rank?: string | null
+          sw_skills?: Json | null
+          sw_toughness?: number | null
+          sw_wounds?: number | null
           temp_hp?: number | null
           type?: string | null
           updated_at?: string | null
