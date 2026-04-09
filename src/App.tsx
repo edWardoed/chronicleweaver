@@ -19,6 +19,8 @@ import CharacterSheet from "./pages/CharacterSheet.tsx";
 import NPCSheet from "./pages/NPCSheet.tsx";
 import SWCharacterSheet from "./pages/SWCharacterSheet.tsx";
 import SWNPCSheet from "./pages/SWNPCSheet.tsx";
+import PFCharacterSheet from "./pages/PFCharacterSheet.tsx";
+import PFNPCSheet from "./pages/PFNPCSheet.tsx";
 import LocationEditor from "./pages/LocationEditor.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -30,9 +32,15 @@ function CharacterSheetRouter() {
   const { data: adventure, isLoading: advLoading } = useAdventure(adventureId);
   if (charLoading || advLoading) return <div className="min-h-screen bg-background p-8 text-foreground">Loading…</div>;
   if (!character) return <div className="min-h-screen bg-background p-8 text-foreground">Character not found</div>;
-  const isSW = adventure?.game_system === 'Savage Worlds';
-  if (character.type === 'NPC') return isSW ? <SWNPCSheet /> : <NPCSheet />;
-  return isSW ? <SWCharacterSheet /> : <CharacterSheet />;
+  const gs = adventure?.game_system;
+  if (character.type === 'NPC') {
+    if (gs === 'Savage Worlds') return <SWNPCSheet />;
+    if (gs === 'Pathfinder') return <PFNPCSheet />;
+    return <NPCSheet />;
+  }
+  if (gs === 'Savage Worlds') return <SWCharacterSheet />;
+  if (gs === 'Pathfinder') return <PFCharacterSheet />;
+  return <CharacterSheet />;
 }
 
 const App = () => (
