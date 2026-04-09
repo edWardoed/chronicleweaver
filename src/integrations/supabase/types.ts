@@ -112,6 +112,11 @@ export type Database = {
           name: string
           notes: string | null
           personality_traits: string | null
+          pf_feats: Json | null
+          pf_heritage: string | null
+          pf_hero_points: number | null
+          pf_key_ability: string | null
+          pf_proficiencies: Json | null
           physical_description: string | null
           proficiencies_languages: string | null
           race: string | null
@@ -173,6 +178,11 @@ export type Database = {
           name: string
           notes?: string | null
           personality_traits?: string | null
+          pf_feats?: Json | null
+          pf_heritage?: string | null
+          pf_hero_points?: number | null
+          pf_key_ability?: string | null
+          pf_proficiencies?: Json | null
           physical_description?: string | null
           proficiencies_languages?: string | null
           race?: string | null
@@ -234,6 +244,11 @@ export type Database = {
           name?: string
           notes?: string | null
           personality_traits?: string | null
+          pf_feats?: Json | null
+          pf_heritage?: string | null
+          pf_hero_points?: number | null
+          pf_key_ability?: string | null
+          pf_proficiencies?: Json | null
           physical_description?: string | null
           proficiencies_languages?: string | null
           race?: string | null
@@ -527,6 +542,11 @@ export type Database = {
           name: string | null
           notes: string | null
           personality_traits: string | null
+          pf_feats: Json | null
+          pf_heritage: string | null
+          pf_hero_points: number | null
+          pf_key_ability: string | null
+          pf_proficiencies: Json | null
           physical_description: string | null
           proficiencies_languages: string | null
           race: string | null
@@ -588,6 +608,11 @@ export type Database = {
           name?: string | null
           notes?: never
           personality_traits?: string | null
+          pf_feats?: Json | null
+          pf_heritage?: string | null
+          pf_hero_points?: number | null
+          pf_key_ability?: string | null
+          pf_proficiencies?: Json | null
           physical_description?: string | null
           proficiencies_languages?: string | null
           race?: string | null
@@ -649,6 +674,11 @@ export type Database = {
           name?: string | null
           notes?: never
           personality_traits?: string | null
+          pf_feats?: Json | null
+          pf_heritage?: string | null
+          pf_hero_points?: number | null
+          pf_key_ability?: string | null
+          pf_proficiencies?: Json | null
           physical_description?: string | null
           proficiencies_languages?: string | null
           race?: string | null
