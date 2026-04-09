@@ -62,6 +62,11 @@ export interface CharacterRow {
   sw_fatigue: number | null;
   sw_bennies: number | null;
   sw_rank: string | null;
+  pf_proficiencies: Record<string, string> | null;
+  pf_feats: { name: string; type: string; level: number; notes: string }[] | null;
+  pf_hero_points: number | null;
+  pf_key_ability: string | null;
+  pf_heritage: string | null;
 }
 
 export interface EquipmentItem {
